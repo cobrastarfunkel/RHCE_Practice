@@ -25,17 +25,11 @@ reset_network() {
 
 
 reset_firewalld() {
-	# Reset firewalld Services to default
-    for zone in $(firewall-cmd --get-zones | cut -d ' ' -f1-);do
-        for i in service port; do
-            for srvc in $(firewall-cmd --zone=$zone --list-$i's' | cut -d ' ' -f1-); do
-                if [ $srvc != 'ssh' ] && [ $srvc != 'dhcpv6-client' ]; then
-                    firewall-cmd --permanent --zone=$zone --remove-$i=$srvc
-                    printf "%s %s Firewall Rule in zone %s Removed\n" $srvc, $i, $zone;
-                fi
-            done;
-        done;
-    done
+	# Reset firewalld Zones to default
+    # Deleteing the zone files will set the zones back to default values
+    # Defaults are defined in /usr/lib/firewalld
+    # Once you add a rule a new file will be created in zones
+    yes| rm -I /etc/firewalld/zones/* 2> /dev/null
     firewall-cmd --reload
     printf "Firewall rules reset\n"
 }
