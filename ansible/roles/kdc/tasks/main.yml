@@ -1,0 +1,9 @@
+---
+- name: Install KDC Packages
+  yum:
+    name: "{{ packages }}" 
+  vars:
+    packages:
+    - krb5-server
+    - krb5-libs
+    - krb5-workstation 

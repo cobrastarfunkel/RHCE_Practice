@@ -1,0 +1,13 @@
+
+- name: Apply common to all nodes
+  hosts: all
+  remote_user: root
+  roles:
+    - common
+
+
+- name: Build KDC Server
+  hosts: kdc
+  remote_user: root
+  roles:
+    #- kdc
