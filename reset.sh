@@ -23,17 +23,18 @@ reset_network() {
 
 reset_firewalld() {
 	# Reset firewalld Services to default
-	for i in service port; do
-		for srvc in $(firewall-cmd --list-$i's' | cut -d ' ' -f1-); do
-			if [ $srvc != 'ssh' ] && [ $srvc != 'dhcpv6-client' ]; then
-				firewall-cmd --permanent --remove-$i=$srvc
-				printf "%s Firewall Rule Removed\n" $srvc;
-			fi
-		done;
-	done;
-	firewall-cmd --reload
-	firewall-cmd --list-all
-	printf "Firewall rules reset\n"
+    for zone in $(firewall-cmd --get-zones | cut -d ' ' -f1-);do
+        for i in service port; do
+            for srvc in $(firewall-cmd --zone=$zone --list-$i's' | cut -d ' ' -f1-); do
+                if [ $srvc != 'ssh' ] && [ $srvc != 'dhcpv6-client' ]; then
+                    firewall-cmd --permanent --zone=$zone --remove-$i=$srvc
+                    printf "%s %s Firewall Rule in zone %s Removed\n" $srvc, $i, $zone;
+                fi
+            done;
+        done;
+    done
+    firewall-cmd --reload
+    printf "Firewall rules reset\n"
 }
 
 
