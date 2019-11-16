@@ -3,7 +3,7 @@
 help_text="$(basename "$0") Usage: [-h] [-n] [-f] -- Resets various settings used for RHCE prep to make practice more efficient
 
 	-h print this text
-	-n reset network interface scripts (you will have no connections)
+	-n reset network interface scripts (you will have no connections or routes)
 	-f remove firewall rules that aren't part of the default (ssh, dhcpv6-client)"
 
 [ $# -eq 0 ] && { echo "$help_text"; exit 1; }
@@ -12,6 +12,9 @@ help_text="$(basename "$0") Usage: [-h] [-n] [-f] -- Resets various settings use
 reset_network() {
 	# Clear out Network Configs
 	find /etc/sysconfig/network-scripts/ -not -regex '.*ifcfg-[lo].*' -regex '.*ifcfg-.*' -exec rm {} +
+
+    # Clear Routes
+    ip route flush all
 
 	# restart network and reload network manager
 	systemctl restart network;
