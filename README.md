@@ -8,36 +8,38 @@ Hostnames and fqdn's are set by ansible.  Configure group_vars/all domain for th
 In ansible/group_vars/kdc_server:
     Change ports if you want.
     
-Run playbook: ansible-playbook rhce_prep.yml
+Run playbook:
+    ansible-playbook rhce_prep.yml
 
 Login to Kerberos server and Run:
     kdb5_util create -s
-        Create your password
+    Create your password
         
     systemctl start {krb5kdc, kadmin}
     systemctl enable {krb5kdc, kadmin}
     
+    The following will open the kerberos prompt, you neeed to add "principals"
     kadmin.local:
-        This will open the kerberos prompt, you neeed to add "principals"
         
-        addprinc host/{ host fqdn }
-        Create a password for the Principal
+    addprinc host/{ host fqdn }
+    Create a password for the Principal
         
-        Create a Keytab for the Host or hosts from above:
-            ktadd -k /etc/krb5.keytab host/{ host fqdn }
+    Create a Keytab for the Host or hosts from above:
+    ktadd -k /etc/krb5.keytab host/{ host fqdn }
         
-        exit
+    exit
+
     To test that you can get a ticket run:
-        kinit
-        klist
+    kinit
+    klist
         
 Log back into the practice server and test Kerberos:
     Run:
-        kinit
-        You should get a ticket
+    kinit
+    You should get a ticket
         
-        klist
-        Should list tickets
+    klist
+    Should list tickets
         
     Once you have a ticket try to ssh to the kdc using Kerberos:
-        ssh -k {kdc hostname }
+    ssh -k {kdc hostname }
