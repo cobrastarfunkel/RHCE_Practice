@@ -5,11 +5,8 @@
     state: present
   with_items:
     - vim-enhanced
-
-- name: Test Ansible Variables
-  debug: 
-    msg: 
-    - "Test {{ ansible_domain }}"
+    - screen
+    - mlocate
 
 - name: Template hosts file
   template:
@@ -18,3 +15,8 @@
     owner: root
     group: root
     mode: '0600'
+
+- name: Copy screenrc
+  copy:
+    src: files/screenrc
+    dest: /etc/screenrc

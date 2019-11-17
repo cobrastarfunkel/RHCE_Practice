@@ -10,4 +10,4 @@
   hosts: kdc
   remote_user: root
   roles:
-    #- kdc
+    - kdc
