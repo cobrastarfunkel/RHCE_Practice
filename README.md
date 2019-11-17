@@ -2,7 +2,7 @@ RHCE TEST PREP
 ======
 This is meant to study for the RHCE by setting up some of the requirments to practice exam objectives.
 
-The reset.sh script will reset your server.  It will remove network connections, reset firewalld, and clear out kerberos configs.  Run ./reset.sh -h to view options.  If you run it aginst the kerberos server or you have kerberos running on the same server you're using to practice it will break it.  Running the Ansible playbook again should fix it but for that reason it may be hard to practice setting up a kerberos client if the server is on the server you're practicing on.
+The reset.sh script will reset your server.  It will remove network connections, reset firewalld, and clear out kerberos configs.  Run ./reset.sh -h to view options.  If you run it aginst the kerberos server or you have kerberos running on the same server you're using to practice it will break it.  Running the Ansible playbook again should fix it but for that reason it may be hard to practice setting up a kerberos client if the kerberos server is on the server you're practicing on.
 
 Kerberso Setup
 ------
