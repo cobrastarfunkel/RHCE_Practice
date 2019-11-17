@@ -5,13 +5,14 @@ The reset.sh script will reset your server.  It will remove network connections,
 Kerberso Setup
 The Kerberos services aren't started by ansible beacuse passwords and principals need to be setup on the server.
 Hostnames and fqdn's are set by ansible.  Configure group_vars/all domain for the domain and the ansible_hostname in the inventory file for the hostname.
-In ansible/group_vars/kdc_server:
-    Change ports if you want.
+In ansible/group_vars/kdc_server change ports if you want.
     
 Run playbook:
+    
     ansible-playbook rhce_prep.yml
 
 Login to Kerberos server and Run:
+
     kdb5_util create -s
     Create your password
         
