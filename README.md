@@ -20,9 +20,6 @@ Login to Kerberos server and Run:
 
     kdb5_util create -s
     Create your password
-        
-    systemctl start {krb5kdc, kadmin}
-    systemctl enable {krb5kdc, kadmin}
     
     The following will open the kerberos prompt, you neeed to add "principals"
     kadmin.local:
@@ -40,6 +37,7 @@ Login to Kerberos server and Run:
     klist
         
 Log back into the practice server and test Kerberos:
+
     Run:
     kinit
     You should get a ticket
