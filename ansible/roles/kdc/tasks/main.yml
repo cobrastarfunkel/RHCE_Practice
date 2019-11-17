@@ -58,3 +58,7 @@
   debug: 
     msg: "Run kdb5_util create -s on KDC server and start krb5kdc, kadmin. Then add principals with kadmin.local
           Services aren't started on here because the DB needs to be created first."
+  changed_when: true
+  notify:
+    - start kadmin
+    - start krb5kdc

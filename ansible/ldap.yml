@@ -1,0 +1,6 @@
+
+- name: Build LDAP Server
+  hosts: ldap_server
+  remote_user: root
+  roles:
+    - ldap_server

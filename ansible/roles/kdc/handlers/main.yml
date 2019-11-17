@@ -1,0 +1,14 @@
+---
+- name: start kadmin
+  systemd:
+    name: kadmin
+    state: started
+    enabled: yes
+    daemon_reload: yes
+
+- name: start krb5kdc
+  systemd:
+    name: krb5kdc
+    state: started
+    enabled: yes
+    daemon_reload: yes
