@@ -6,7 +6,7 @@
 
 [realms]
 	{{ ansible_domain|upper }} = {
-    database_name = /usr/local/var/krb5kdc/principal
+    database_name = /var/kerberos/krb5kdc/principal
 	kadmind_port = {{ k_admin_port }}
     acl_file = /var/kerberos/krb5kdc/kadm5.acl   
     dict_file = /usr/dict/words                                               

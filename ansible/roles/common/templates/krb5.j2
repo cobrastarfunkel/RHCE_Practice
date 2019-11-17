@@ -17,8 +17,8 @@ includedir /etc/krb5.conf.d/
 
 [realms]
 {{ ansible_domain|upper }} = {
-  kdc = {{ ansible_fqdn }}:{{ kdc_port }}
-  admin_server = {{ ansible_fqdn }}:{{ k_admin_port }}
+  kdc = {{ kdc_server }}.{{ ansible_domain }}:{{ kdc_port }}
+  admin_server = {{  kdc_server }}.{{ ansible_domain }}:{{ k_admin_port }}
   default_domain = {{ ansible_domain }}
  }
 
