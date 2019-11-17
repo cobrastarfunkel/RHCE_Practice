@@ -8,6 +8,16 @@
     - krb5-libs
     - krb5-workstation 
 
+- name: KDC Firewall Rules
+  firewalld:
+    port: '{{ ports }}/tcp'
+    permanent: yes
+    state: enabled
+  vars:
+    ports:
+    - '{{ k_admin_port }}'
+    - '{{ kdc_port }}'
+
 - name: Template for krb5.conf
   template:
     src: templates/krb5.j2
