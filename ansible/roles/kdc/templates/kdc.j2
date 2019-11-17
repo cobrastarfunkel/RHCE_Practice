@@ -1,7 +1,6 @@
 [kdcdefaults]
 	kdc_ports = {{ kdc_port }}
     acl_file = /var/kerberos/krb5kdc/kadm5.acl   
-    dict_file = /usr/dict/words                                               
     admin_keytab = /var/kerberos/krb5kdc/kadm5.keytab 
 
 [realms]
@@ -9,6 +8,5 @@
     database_name = /var/kerberos/krb5kdc/principal
 	kadmind_port = {{ k_admin_port }}
     acl_file = /var/kerberos/krb5kdc/kadm5.acl   
-    dict_file = /usr/dict/words                                               
     supported_enctypes = des-cbc-crc:normal des3-cbc-raw:normal des3-cbc-sha1:normal des-cbc-crc:v4 des-cbc-crc:afs3
 	}
