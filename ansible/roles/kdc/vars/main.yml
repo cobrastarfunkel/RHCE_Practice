@@ -3,3 +3,4 @@
 
 k_admin_port: 749
 kdc_port: 88
+kdc_user: admin

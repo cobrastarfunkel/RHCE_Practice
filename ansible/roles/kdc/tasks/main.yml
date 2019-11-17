@@ -8,16 +8,17 @@
     - krb5-libs
     - krb5-workstation 
 
+# Kerberos Firewall ports
 - name: KDC Firewall Rules
   firewalld:
-    port: '{{ ports }}/tcp'
+    port: '{{ item }}/tcp'
     permanent: yes
     state: enabled
-  vars:
-    ports:
+  with_items:
     - '{{ k_admin_port }}'
     - '{{ kdc_port }}'
 
+# Kerberos Confs
 - name: Template for krb5.conf
   template:
     src: templates/krb5.j2
@@ -26,16 +27,31 @@
     group: root
     mode: '0644'
 
+# Dir for Kerberos acls
 - name: Ensure krb5kdc dir exists
   file:
     path: /var/kerberos/krb5kdc/
     state: directory
     mode: '0755'
 
+# Kerberos Confs
 - name: Template for kdc.conf
   template:
     src: templates/kdc.j2
-    dest: /var/kerberos/krb5kdc/kdc.j2
+    dest: /var/kerberos/krb5kdc/kdc.conf
     owner: root
     group: root
     mode: '0644'
+
+# Principals that can access KDC db
+- name: Template for kadm5.acl
+  template:
+    src: templates/kadm5.j2
+    dest: /var/kerberos/krb5kdc/kadm5.acl
+    owner: root
+    group: root
+    mode: '0644'
+
+- name:  Log into to KDC server to finish setup
+  debug: 
+    msg: "Run kdb5_util create -s on KDC server"
