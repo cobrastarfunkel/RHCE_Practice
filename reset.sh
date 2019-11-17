@@ -2,13 +2,21 @@
 #
 # Reset things done to practice for RHCE
 
-help_text="$(basename "$0") Usage: [-h] [-n] [-f] -- Resets various settings used for RHCE prep to make practice more efficient
+GREEN='\033[0;32m'
+LGREEN='\033[1;32m'
+RED='\033[0;31m'
+CYAN='\033[0;36m'
+LCYAN='\033[1;36m'
+NC='\033[0m'
+
+help_text="${CYAN}$(basename "$0") Usage: [-h] [-n] [-f] [-k] -- Resets various settings used for RHCE prep to make practice more efficient
 
     -h print this text
     -n reset network interface scripts (you will have no connections or routes)
-    -f remove firewall rules that aren't part of the default (ssh, dhcpv6-client)"
+    -f remove firewall rules that aren't part of the default (ssh, dhcpv6-client)
+    -k reset kerberos configs${NC}"
 
-[ $# -eq 0 ] && { echo "${help_text}"; exit 1; }
+[ $# -eq 0 ] && { printf "${help_text}\n"; exit 1; }
 
 
 
@@ -25,7 +33,7 @@ reset_network() {
     # restart network and reload network manager
     systemctl restart network;
     nmcli con reload
-    printf "Network configs reset!\n"
+    printf "${GREEN}Network configs reset!\n${NC}"
 }
 
 
@@ -42,27 +50,42 @@ reset_network() {
 reset_firewalld() {
     yes| rm -I /etc/firewalld/zones/* 2> /dev/null
     firewall-cmd --reload
-    printf "Firewall rules reset\n"
+    printf "${GREEN}Firewall rules reset\n${NC}"
 }
 
 
 
 
-while getopts :hnf opt; do
+################################################
+# Reset kerberos configs and remove packages
+################################################
+reset_kerberos() {
+    yes| rm /etc/krb5.conf 2> /dev/null
+    yum -y remove krb5-workstation pam_krb5 2> /dev/null
+    yum -y reinstall krb5-libs 2> /dev/null
+    printf "${GREEN}Kerberos Configs Reset\n${NC}"
+}
+
+
+while getopts :hnfk opt; do
     case $opt in
         h)
-            echo "{$help_text}"
+            printf "{$help_text}\n"
             exit
             ;;
         n)
-            echo "Resetting Network Configs"
+            printf "${CYAN}Resetting Network Configs\n${NC}"
             reset_network
             ;;
         f)
-            echo "Resetting Firewall"
+            printf "${CYAN}Resetting Firewall\n${NC}"
             reset_firewalld
             ;;
-        \?)	echo "{$help_text}"
+        k)
+            printf "${CYAN}Resetting Kerberos Configs\n${NC}"
+            reset_kerberos
+            ;;
+        \?)	printf "{$help_text}\n"
             ;;
     esac
 done
