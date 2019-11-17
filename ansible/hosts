@@ -14,7 +14,7 @@
 ansible_master ansible_host=192.168.1.22
 
 [kdc]
-kdc_server ansible_host=192.168.1.23
+kdc ansible_host=192.168.1.23
 
 ## green.example.com
 ## blue.example.com

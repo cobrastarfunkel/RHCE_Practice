@@ -14,9 +14,9 @@ help_text="${CYAN}$(basename "$0") Usage: [-h] [-n] [-f] [-k] -- Resets various 
     -h print this text
     -n reset network interface scripts (you will have no connections or routes)
     -f remove firewall rules that aren't part of the default (ssh, dhcpv6-client)
-    -k reset kerberos configs${NC}"
+    -k reset kerberos configs${NC}\n"
 
-[ $# -eq 0 ] && { printf "${help_text}\n"; exit 1; }
+[ $# -eq 0 ] && { printf "${help_text}"; exit 1; }
 
 
 
@@ -70,7 +70,7 @@ reset_kerberos() {
 while getopts :hnfk opt; do
     case $opt in
         h)
-            printf "{$help_text}\n"
+            printf "{$help_text}"
             exit
             ;;
         n)

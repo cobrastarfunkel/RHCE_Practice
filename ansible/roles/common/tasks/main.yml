@@ -9,6 +9,11 @@
     - mlocate
     - bash-completion
 
+- name: Set Hostname and fqdn based on Ansible Inventory
+  command: hostnamectl set-hostname '{{ inventory_hostname }}.{{ domain }}'
+  when: (ansible_hostname not in inventory_hostname) or
+        (ansible_domain not in domain)
+
 - name: Template hosts file
   template:
     src: templates/hosts.j2

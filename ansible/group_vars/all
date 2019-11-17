@@ -1,6 +1,2 @@
 ---
-# Kerberos Server Variables
-
-k_admin_port: 749
-kdc_port: 88
-kdc_server: kdc
+domain: rhce.lab
