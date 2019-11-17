@@ -12,7 +12,7 @@ Kerberos Setup
 * In ansible/group_vars/kdc_server change ports if you want.\
 * The KDC server is defined by the hosts file under [kdc_server].  Define the host you want to be the Kerberos server here.
     
-#### Run playbook:
+Run playbook:
     
     ansible-playbook rhce_prep.yml
 
