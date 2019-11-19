@@ -7,6 +7,8 @@
     - openldap
     - openldap-clients
     - openldap-servers
+    - openldap-servers-sql
+    - openldap-devel
     - compat-openldap
     - nss-pam-ldapd
     - mod_ldap
