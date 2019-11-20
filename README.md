@@ -57,9 +57,11 @@ LDAP Setup
 * TODO: Add templates for creating users and groups on ldap server
 
 Run:
+
     slappasswd -h {SSHA} -s your password
     Save the output of this command and put it in the /templates/db.ldif.j2
     file at the bottom where it says olcRootPw
 
 Run:
+
     ansible-playbook ldap.yml --ask-vault-pass
