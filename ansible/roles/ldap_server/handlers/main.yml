@@ -23,6 +23,16 @@
     cmd: ldapadd -x -D "cn=ldapadm,dc={{ short_domain }},dc={{ long_domain.split('.')[1] }}" -f base.ldif -w "{{ ldap_passwd }}"
     chdir: '{{ ldap_dir }}'
 
+- name: Load ldap group
+  shell:
+    cmd: ldapadd -x -D "cn=ldapadm,dc={{ short_domain }},dc={{ long_domain.split('.')[1] }}" -f group.ldif -w "{{ ldap_passwd }}"
+    chdir: '{{ ldap_dir }}'
+
+- name: Load ldap user
+  shell:
+    cmd: ldapadd -x -D "cn=ldapadm,dc={{ short_domain }},dc={{ long_domain.split('.')[1] }}" -f ldapuser.ldif -w "{{ ldap_passwd }}"
+    chdir: '{{ ldap_dir }}'
+
 - name: Import schemas
   shell:
     cmd: ldapadd -Y EXTERNAL -H ldapi:/// -f '/etc/openldap/schema/{{ item }}'

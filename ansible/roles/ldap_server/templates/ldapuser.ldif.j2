@@ -1,0 +1,17 @@
+dn: uid=ldapuser1,ou=People,dc={{ short_domain }},dc={{ long_domain.split('.')[1] }}
+objectClass: top
+objectClass: account
+objectClass: posixAccount
+objectClass: shadowAccount
+cn: ldapuser1
+uid: ldapuser1
+uidNumber: 9998
+gidNumber: 1005
+homeDirectory: /home/ldapuser1
+loginShell: /bin/bash
+gecos: ldapuser1 Test Account
+userPassword: {{ ldap_passwd }}
+shadowLastChange: 17058
+shadowMin: 0
+shadowMax: 99999
+shadowWarning: 7

@@ -63,6 +63,26 @@
   notify:
     - Load ldap base
 
+- name: LDAP test group
+  template:
+    src: templates/group.ldif.j2
+    dest: '{{ ldap_dir }}group.ldif'
+    owner: ldap
+    group: ldap
+    mode: '0600'
+  notify:
+    - Load ldap group
+
+- name: LDAP test user
+  template:
+    src: templates/ldapuser.ldif.j2
+    dest: '{{ ldap_dir }}ldapuser.ldif'
+    owner: ldap
+    group: ldap
+    mode: '0600'
+  notify:
+    - Load ldap user
+
 - name: Give ldap ownership of dir
   file:
     path: '{{ ldap_dir }}'
@@ -77,4 +97,3 @@
   changed_when: true
   notify:
     - start slapd
-    - Load ldap base
