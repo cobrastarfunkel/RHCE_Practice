@@ -11,4 +11,70 @@
     - openldap-devel
     - compat-openldap
     - nss-pam-ldapd
-    - mod_ldap
+  notify:
+    - Import schemas
+
+# LDAP Firewall port
+- name: LDAP Firewall Rules
+  firewalld:
+    port: '{{ ldap_port }}/tcp'
+    permanent: yes
+    immediate: yes
+    state: enabled
+    zone: public
+
+- name: LDAP db file
+  template:
+    src: templates/db.ldif.j2
+    dest: '{{ ldap_dir }}db.ldif'
+    owner: ldap
+    group: ldap
+    mode: '0600'
+  notify:
+    - Load ldap db_config
+
+- name: LDAP monitor file
+  template:
+    src: templates/monitor.j2
+    dest: '{{ ldap_dir }}monitor.ldif'
+    owner: ldap
+    group: ldap
+    mode: '0600'
+  notify:
+    - Load ldap monitor.ldif
+
+- name: LDAP db config
+  copy:
+    src: files/DB_CONFIG.j2
+    dest: '{{ ldap_dir }}DB_CONFIG'
+    owner: ldap
+    group: ldap
+    mode: '0600'
+  notify:
+    - start slapd
+
+- name: LDAP base
+  template:
+    src: templates/base.j2
+    dest: '{{ ldap_dir }}base.ldif'
+    owner: ldap
+    group: ldap
+    mode: '0600'
+  notify:
+    - Load ldap base
+
+- name: Give ldap ownership of dir
+  file:
+    path: '{{ ldap_dir }}'
+    state: directory
+    recurse: yes
+    owner: ldap
+    group: ldap
+
+- name:  Log into to KDC server to finish setup
+  debug:
+    msg: "Login to LDAP Server to Finish Configuration"
+  changed_when: true
+  notify:
+    - start slapd
+    - Load ldap base

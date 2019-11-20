@@ -1,0 +1,15 @@
+
+dn: olcDatabase={2}hdb,cn=config
+changetype: modify
+replace: olcSuffix
+olcSuffix: dc={{ short_domain }},dc={{ long_domain.split(".")[1]|lower }}
+
+dn: olcDatabase={2}hdb,cn=config
+changetype: modify
+replace: olcRootDN
+olcRootDN: cn=ldapadm,dc={{ short_domain }},dc={{ long_domain.split(".")[1]|lower }}
+
+dn: olcDatabase={2}hdb,cn=config
+changetype: modify
+replace: olcRootPW
+olcRootPW: {SSHA}qHJdiqg9qASUyJcaUZJEC7mp6d6Mpm4t

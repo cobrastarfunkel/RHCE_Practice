@@ -7,9 +7,9 @@ The reset.sh script will reset your server.  It will remove network connections,
 Kerberos Setup
 ------
 #### Before you Run the Playbook
-* The Kerberos services aren't started by ansible beacuse passwords and principals need to be setup on the server.\
-* Hostnames and fqdn's are set by ansible.  Configure group_vars/all domain for the domain and the ansible_hostname in the inventory file for the hostname.\
-* In ansible/group_vars/kdc_server change ports if you want.\
+* The Kerberos services aren't started by ansible beacuse passwords and principals need to be setup on the server.
+* Hostnames and fqdn's are set by ansible.  Configure group_vars/all domain for the domain and the ansible_hostname in the inventory file for the hostname.
+* In ansible/group_vars/kdc_server change ports if you want.
 * The KDC server is defined by the hosts file under [kdc_server].  Define the host you want to be the Kerberos server here.
     
 Run playbook:
@@ -46,4 +46,20 @@ Log back into the practice server and test Kerberos:
     Should list tickets
         
     Once you have a ticket try to ssh to the kdc using Kerberos:
-    ssh -k {kdc hostname }
+
+LDAP Setup
+------
+#### Before you Run the Playbook
+* Configure the LDAP server in the hosts file.  In the example we're using the KDC is the LDAP server.
+* Set the ldap port in group_vars/ldap_server if you want it to be something else.
+* An encrypted vault password needs to be set to add some of the ldap stuff.  Replace the vault value in
+  group_vars/ldap_server or put it in there in plaintext if you don't care.
+* TODO: Add templates for creating users and groups on ldap server
+
+Run:
+    slappasswd -h {SSHA} -s your password
+    Save the output of this command and put it in the /templates/db.ldif.j2
+    file at the bottom where it says olcRootPw
+
+Run:
+    ansible-playbook ldap.yml --ask-vault-pass
