@@ -3,10 +3,10 @@
 {% for user, user_info in user_dict.items() %}
 {% if user not in user_list.stdout %}
 {% if multi_user.append(multi_user.pop() + 1) %}{% endif %}
-{% if multi_user > 1 %}
+{% if multi_user[0] > 1 %}
 
 {% endif %}
-dn: uid={{ user }},ou=People,dc={{ short_domain }},dc={{ long_domain.split('.')[1] }}
+dn: uid={{ user }},ou={{ user_info.ou }},dc={{ short_domain }},dc={{ long_domain.split('.')[1] }}
 objectClass: top
 objectClass: account
 objectClass: posixAccount

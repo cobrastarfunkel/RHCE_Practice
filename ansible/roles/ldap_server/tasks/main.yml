@@ -1,8 +1,11 @@
 ---
-- name: Delete previous user files
+- name: Delete previous ldif files
   file:
-    path: "{{ ldap_dir }}/ldapuser.ldif"
+    path: "{{ ldap_dir }}{{ item }}"
     state: absent
+  with_items:
+    - "ldapuser.ldif"
+    - "group.ldif"
 
 - name: Get List of users
   shell: "getent passwd | cut -d':' -f 1"
@@ -25,6 +28,10 @@
     - nss-pam-ldapd
   notify:
     - Import schemas
+
+- name: Get List of users
+  shell: "ldapsearch -x -b ou=Group,dc={{ short_domain }},dc={{ long_domain.split('.')[1] }}|awk 'FS=\":\"{if($1 == \"gidNumber\")print $2}'"
+  register: groups_list
 
 ##############
 ## Firewall ##

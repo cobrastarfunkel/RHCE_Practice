@@ -1,19 +1,40 @@
 ldap_users:
   - ldapuser1:
       uid: 9998
+      gid:
+      ou: People
       description: ldapuser1 User Test
 
   - ldapuser3:
       uid: 9997
       gid: 1005
+      ou: People
       description: Ldap User Test Again
 
   - ldapuser4:
       uid: 10000
       gid: 1005
+      ou: People
       description: Ldap 4th Test
 
   - ldapuser5:
       uid: 10001
       gid: 1005
+      ou: People
       description: Ldap 5th Test
+
+  - ldapuser6:
+      uid: 10002
+      gid: 4000
+      ou: People
+      description: Ldap 5th Test
+
+ldap_groups:
+  - testGroup2:
+      gid: 2000 
+
+  - testGroup3:
+      gid: 3000 
+
+  - testGroup4:
+      gid: 4000 
