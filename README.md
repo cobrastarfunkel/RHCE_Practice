@@ -38,7 +38,8 @@ Login to Kerberos server and Run:
         
 Log back into the practice server and test Kerberos:
 
-    Run:
+Run:
+
     kinit
     You should get a ticket
         
