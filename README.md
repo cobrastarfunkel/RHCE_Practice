@@ -54,7 +54,8 @@ LDAP Setup
 * Set the ldap port in group_vars/ldap_server if you want it to be something else.
 * An encrypted vault password needs to be set to add some of the ldap stuff.  Replace the vault value in
   group_vars/ldap_server or put it in there in plaintext if you don't care.
-* TODO: Add templates for creating users and groups on ldap server
+* Create users in roles/ldap_server/vars/main.yml in the same way the example ldapusers are set.
+* TODO: Add templates for creating groups on ldap server
 
 Run:
 
