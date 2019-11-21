@@ -19,18 +19,21 @@ Login to Kerberos server and Run:
     kdb5_util create -s
     Create your password
     
-    The following will open the kerberos prompt, you neeed to add "principals"
+  The following will open the kerberos prompt, you neeed to add "principals"
+  
     kadmin.local:
         
     addprinc host/{ host fqdn }
     Create a password for the Principal
         
-    Create a Keytab for the Host or hosts from above:
+  Create a Keytab for the Host or hosts from above:
+  
     ktadd -k /etc/krb5.keytab host/{ host fqdn }
         
     exit
 
-    To test that you can get a ticket run:
+  To test that you can get a ticket run:
+  
     kinit
     klist
         
@@ -39,17 +42,19 @@ Log back into the practice server and test Kerberos:
 Run:
 
     kinit
-    You should get a ticket
+  You should get a ticket
         
     klist
-    Should list tickets
+  Should list tickets
         
-    Once you have a ticket try to ssh to the kdc using Kerberos:
+  Once you have a ticket try to ssh to the kdc using Kerberos:
+  
+    ssh -k kerberos_server_hostname
 
 LDAP Setup
 ------
 #### Before you Run the Playbook
-* Configure the LDAP server in the hosts file.  In the example we're using the KDC is the LDAP server.
+* Configure the LDAP server in the hosts file.  In the example we're using the KDC as the LDAP server.
 * Set the ldap port in group_vars/ldap_server if you want it to be something else.
 * An encrypted vault password needs to be set to add some of the ldap stuff.  Replace the vault value in
   group_vars/ldap_server or put it in there in plaintext if you don't care.
@@ -60,9 +65,14 @@ LDAP Setup
 Run:
 
     slappasswd -h {SSHA} -s your password
-    Save the output of this command and put it in the /templates/db.ldif.j2
-    file at the bottom where it says olcRootPw
+  Save the output of this command and put it in the /templates/db.ldif.j2 file at the bottom where it says olcRootPw.
 
 Run:
 
     ansible-playbook ldap.yml --ask-vault-pass
+    Note: You don't need the --ask-vault-pass if you chose to not encrypt your password
+
+To test Run:
+
+    getent passwd # For users
+    getent group # For Groups
