@@ -37,3 +37,4 @@
   shell:
     cmd: ldapadd -Y EXTERNAL -H ldapi:/// -f '/etc/openldap/schema/{{ item }}'
   with_items: '{{ list_of_schemas }}'
+

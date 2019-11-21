@@ -1,0 +1,19 @@
+ldap_users:
+  - ldapuser1:
+      uid: 9998
+      description: ldapuser1 User Test
+
+  - ldapuser3:
+      uid: 9997
+      gid: 1005
+      description: Ldap User Test Again
+
+  - ldapuser4:
+      uid: 10000
+      gid: 1005
+      description: Ldap 4th Test
+
+  - ldapuser5:
+      uid: 10001
+      gid: 1005
+      description: Ldap 5th Test

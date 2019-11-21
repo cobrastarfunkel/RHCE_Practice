@@ -1,4 +1,16 @@
 ---
+- name: Delete previous user files
+  file:
+    path: "{{ ldap_dir }}/ldapuser.ldif"
+    state: absent
+
+- name: Get List of users
+  shell: "getent passwd | cut -d':' -f 1"
+  register: user_list
+
+##############
+## Packages ##
+##############
 - name: Install LDAP Packages
   yum:
     name: "{{ item }}"
@@ -14,78 +26,83 @@
   notify:
     - Import schemas
 
-# LDAP Firewall port
+##############
+## Firewall ##
+##############
 - name: LDAP Firewall Rules
   firewalld:
-    port: '{{ ldap_port }}/tcp'
+    port: "{{ ldap_port }}/tcp"
     permanent: yes
     immediate: yes
     state: enabled
     zone: public
 
+##############
+#### Files ###
+##############
 - name: LDAP db file
   template:
     src: templates/db.ldif.j2
-    dest: '{{ ldap_dir }}db.ldif'
+    dest: "{{ ldap_dir }}db.ldif"
     owner: ldap
     group: ldap
-    mode: '0600'
+    mode: "0600"
   notify:
     - Load ldap db_config
 
 - name: LDAP monitor file
   template:
     src: templates/monitor.j2
-    dest: '{{ ldap_dir }}monitor.ldif'
+    dest: "{{ ldap_dir }}monitor.ldif"
     owner: ldap
     group: ldap
-    mode: '0600'
+    mode: "0600"
   notify:
     - Load ldap monitor.ldif
 
 - name: LDAP db config
   copy:
     src: files/DB_CONFIG.j2
-    dest: '{{ ldap_dir }}DB_CONFIG'
+    dest: "{{ ldap_dir }}DB_CONFIG"
     owner: ldap
     group: ldap
-    mode: '0600'
+    mode: "0600"
   notify:
     - start slapd
 
 - name: LDAP base
   template:
     src: templates/base.j2
-    dest: '{{ ldap_dir }}base.ldif'
+    dest: "{{ ldap_dir }}base.ldif"
     owner: ldap
     group: ldap
-    mode: '0600'
+    mode: "0600"
   notify:
     - Load ldap base
 
 - name: LDAP test group
   template:
     src: templates/group.ldif.j2
-    dest: '{{ ldap_dir }}group.ldif'
+    dest: "{{ ldap_dir }}group.ldif"
     owner: ldap
     group: ldap
-    mode: '0600'
+    mode: "0600"
   notify:
     - Load ldap group
 
 - name: LDAP test user
   template:
     src: templates/ldapuser.ldif.j2
-    dest: '{{ ldap_dir }}ldapuser.ldif'
+    dest: "{{ ldap_dir }}ldapuser.ldif"
     owner: ldap
     group: ldap
-    mode: '0600'
+    mode: "0600"
   notify:
     - Load ldap user
 
 - name: Give ldap ownership of dir
   file:
-    path: '{{ ldap_dir }}'
+    path: "{{ ldap_dir }}"
     state: directory
     recurse: yes
     owner: ldap
@@ -97,3 +114,4 @@
   changed_when: true
   notify:
     - start slapd
+
