@@ -56,7 +56,7 @@ LDAP Setup
   group_vars/ldap_server or put it in there in plaintext if you don't care.
 * Create users in roles/ldap_server/vars/main.yml in the same way the example ldapusers are set.
 * Turns out OpenLDAP is picky about ldif files and white space hence the overly complicated file to add users.  This will compare the output of getent passwd to the list of users you want to add.  If the user already exists it will be skipped to stop LDAP errors.  If you can't use getent for some reason to pull a user list switch the command at the top of roles/ldap_server/main.yml to pull your user list.
-* TODO: Add templates for creating groups on ldap server
+* Groups are managed in the ldap_server/vars/main.yml file.  It will handle the same gid by ignoring it but group names aren't checked at the moment.
 
 Run:
 
