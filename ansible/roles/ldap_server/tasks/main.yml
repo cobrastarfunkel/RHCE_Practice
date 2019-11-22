@@ -1,5 +1,3 @@
 ---
 - import_tasks: pkgs_firewall_ldap.yml
 - import_tasks: files_ldap.yml
-
-
