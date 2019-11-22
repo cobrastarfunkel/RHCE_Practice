@@ -1,0 +1,91 @@
+---
+
+# Remove Previous Files
+- name: Delete previous ldif files
+  file:
+    path: "{{ ldap_dir }}{{ item }}"
+    state: absent
+  with_items:
+    - "ldapuser.ldif"
+    - "group.ldif"
+
+# Get the list of Users to compare when building template
+- name: Get List of users
+  shell: "getent passwd | cut -d':' -f 1"
+  register: user_list
+
+# Get groups to compare when building template
+- name: Get List of users
+  shell: "ldapsearch -x -b ou=Group,dc={{ short_domain }},dc={{ long_domain.split('.')[1] }}|awk 'FS=\":\"{if($1 == \"gidNumber\")print $2}'"
+  register: groups_list
+
+
+#### Files ####
+
+- name: LDAP db file
+  template:
+    src: templates/db.ldif.j2
+    dest: "{{ ldap_dir }}db.ldif"
+    owner: ldap
+    group: ldap
+    mode: "0600"
+  notify:
+    - Load ldap db_config
+
+- name: LDAP monitor file
+  template:
+    src: templates/monitor.j2
+    dest: "{{ ldap_dir }}monitor.ldif"
+    owner: ldap
+    group: ldap
+    mode: "0600"
+  notify:
+    - Load ldap monitor.ldif
+
+- name: LDAP db config
+  copy:
+    src: files/DB_CONFIG.j2
+    dest: "{{ ldap_dir }}DB_CONFIG"
+    owner: ldap
+    group: ldap
+    mode: "0600"
+  notify:
+    - start slapd
+
+- name: LDAP base
+  template:
+    src: templates/base.j2
+    dest: "{{ ldap_dir }}base.ldif"
+    owner: ldap
+    group: ldap
+    mode: "0600"
+  notify:
+    - Load ldap base
+
+- name: LDAP test group
+  template:
+    src: templates/group.ldif.j2
+    dest: "{{ ldap_dir }}group.ldif"
+    owner: ldap
+    group: ldap
+    mode: "0600"
+  notify:
+    - Load ldap group
+
+- name: LDAP test user
+  template:
+    src: templates/ldapuser.ldif.j2
+    dest: "{{ ldap_dir }}ldapuser.ldif"
+    owner: ldap
+    group: ldap
+    mode: "0600"
+  notify:
+    - Load ldap user
+
+- name: Give ldap ownership of dir
+  file:
+    path: "{{ ldap_dir }}"
+    state: directory
+    recurse: yes
+    owner: ldap
+    group: ldap

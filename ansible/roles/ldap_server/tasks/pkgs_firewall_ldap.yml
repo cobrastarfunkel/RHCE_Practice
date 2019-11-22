@@ -1,0 +1,27 @@
+---
+# Packages
+- name: Install LDAP Packages
+  yum:
+    name: "{{ item }}"
+    state: present
+  with_items:
+    - openldap
+    - openldap-clients
+    - openldap-servers
+    - openldap-servers-sql
+    - openldap-devel
+    - compat-openldap
+    - nss-pam-ldapd
+  notify:
+    - Import schemas
+
+
+# Firewall
+- name: LDAP Firewall Rules
+  firewalld:
+    port: "{{ ldap_port }}/tcp"
+    permanent: yes
+    immediate: yes
+    state: enabled
+    zone: public
+
