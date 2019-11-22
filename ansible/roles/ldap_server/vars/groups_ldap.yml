@@ -1,0 +1,15 @@
+---
+# Put groups in here.
+
+ldap_groups:
+  - testGroup2:
+      gid: 2000 
+
+  - testGroup3:
+      gid: 3000 
+
+  - testGroup4:
+      gid: 4000 
+
+  - testGroup41:
+      gid: 4001

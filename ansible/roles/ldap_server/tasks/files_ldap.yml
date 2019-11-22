@@ -1,5 +1,11 @@
 ---
 
+- name: Include vars for users
+  include_vars: users_ldap.yml
+
+- name: Include vars for groups
+  include_vars: groups_ldap.yml
+
 # Remove Previous Files
 - name: Delete previous ldif files
   file:
@@ -11,7 +17,7 @@
 
 # Get the list of Users to compare when building template
 - name: Get List of users
-  shell: "getent passwd | cut -d':' -f 1"
+  shell: "ldapsearch -x -b ou=People,dc={{ short_domain }},dc={{ long_domain.split('.')[1] }}|awk 'FS=\":\"{if($1 == \"uidNumber\")print$2}'"
   register: user_list
 
 # Get groups to compare when building template

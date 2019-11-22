@@ -1,7 +1,7 @@
 {% set multi_user = [0] %}
 {% for user_dict in ldap_users %}
 {% for user, user_info in user_dict.items() %}
-{% if user not in user_list.stdout %}
+{% if user_info.uid_number|string not in user_list.stdout %}
 {% if multi_user.append(multi_user.pop() + 1) %}{% endif %}
 {% if multi_user[0] > 1 %}
 
@@ -13,7 +13,7 @@ objectClass: posixAccount
 objectClass: shadowAccount
 cn: {{ user }}
 uid: {{ user }}
-uidNumber: {{ user_info.uid }}
+uidNumber: {{ user_info.uid_number }}
 gidNumber: {{ user_info.gid|default("1005", true) }}
 homeDirectory: /home/{{ user }}
 loginShell: /bin/bash
