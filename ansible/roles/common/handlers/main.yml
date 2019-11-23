@@ -1,0 +1,5 @@
+
+- name: load vim plugins
+  shell:
+    cmd: vim +PluginInstall +qall
+
