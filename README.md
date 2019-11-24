@@ -2,9 +2,9 @@ RHCE TEST PREP
 ======
 This is meant to study for the RHCE by setting up some of the requirments to practice exam objectives.
 ##### Hostnames and fqdn's are set by ansible.  Configure group_vars/all "long_domain" "short_domain" for the domain and the "ansible_hostname" in the inventory file for the hostname.
-###### NOTE: Hosts file will break because of how ansible handles its "magic variables" if you run it on an individual server.  Needs to be fixed.
+###### NOTE: /etc/hosts is based off of the ansible inventory file.  Set the path in group_vars/all.  It greps out your uncommented ansible host assignments.  It only looks for hosts in this format "hostname ansible_host=192.168.1.2".
 
-TODO: Fix hosts file
+TODO: Cover the rest of the inventory formats for hosts file
 
 The reset.sh script will reset your server.  It will remove network connections, reset firewalld, and clear out kerberos configs.  Run ./reset.sh -h to view options.  If you run it aginst the kerberos server or you have kerberos running on the same server you're using to practice it will break it.  Running the Ansible playbook again should fix it but for that reason it may be hard to practice setting up a kerberos client if the kerberos server is on the server you're practicing on.
 
