@@ -1,3 +1,5 @@
 ---
 long_domain: rhce.lab
 short_domain: rhce
+
+hosts_lookup: "{{ lookup('pipe', 'egrep \"=[1-9]{3}.[0-9]{3}.*\" /etc/ansible/hosts | cut -d\" \" -f1') }}"
