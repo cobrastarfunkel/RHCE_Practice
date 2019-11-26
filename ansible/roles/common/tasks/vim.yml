@@ -2,7 +2,11 @@
 
 - name: Install basic Packages
   yum:
-    name: ['vim-enhanced', 'screen', 'mlocate', 'bash-completion', 'git']
+    name: ['vim-enhanced', 
+           'screen', 
+           'mlocate', 
+           'bash-completion', 
+           'git']
     state: present
 
 

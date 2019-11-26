@@ -8,6 +8,13 @@
 
 # LDAP file imports
 # TODO: Make them vars and pass info based on var relating to file
+- name: Import schemas
+  shell:
+    cmd: ldapadd -Y EXTERNAL -H ldapi:/// -f '/etc/openldap/schema/{{ item }}'
+  with_items: '{{ list_of_schemas }}'
+  notify:
+    - start slapd
+
 - name: Load ldap db_config
   shell:
     cmd: ldapadd -Y EXTERNAL -H ldapi:/// -f db.ldif
@@ -26,13 +33,6 @@
   shell:
     cmd: ldapadd -x -D "cn=ldapadm,dc={{ short_domain }},dc={{ long_domain.split('.')[1] }}" -f base.ldif -w "{{ ldap_passwd }}"
     chdir: '{{ ldap_dir }}'
-  notify:
-    - start slapd
-
-- name: Import schemas
-  shell:
-    cmd: ldapadd -Y EXTERNAL -H ldapi:/// -f '/etc/openldap/schema/{{ item }}'
-  with_items: '{{ list_of_schemas }}'
   notify:
     - start slapd
 

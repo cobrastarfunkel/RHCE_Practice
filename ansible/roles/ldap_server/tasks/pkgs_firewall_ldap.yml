@@ -2,16 +2,14 @@
 # Packages
 - name: Install LDAP Packages
   yum:
-    name: "{{ item }}"
+    name: ['openldap', 
+           'openldap-clients', 
+           'openldap-servers', 
+           'openldap-servers-sql', 
+           'openldap-devel', 
+           'compat-openldap', 
+           'nss-pam-ldapd']
     state: present
-  with_items:
-    - openldap
-    - openldap-clients
-    - openldap-servers
-    - openldap-servers-sql
-    - openldap-devel
-    - compat-openldap
-    - nss-pam-ldapd
   notify:
     - Import schemas
 

@@ -15,6 +15,7 @@ help_text="${CYAN}$(basename "$0") Usage: [-h] [-n] [-f] [-k] -- Resets various 
     -n reset network interface scripts (you will have no connections or routes)
     -f remove firewall rules that aren't part of the default (ssh, dhcpv6-client)
     -k reset kerberos configs
+    -l reset LDAP configs
     -z Run all options listed above${NC}\n"
 
 [ $# -eq 0 ] && { printf "${help_text}"; exit 1; }
@@ -68,7 +69,18 @@ reset_kerberos() {
 }
 
 
-while getopts :hnfkz opt; do
+
+################################################
+# Reset ldap configs and remove packages
+################################################
+reset_ldap() {
+    yum remove -y openldap-clients nss-pam-ldapd 2>/dev/null
+    yes| rm /etc/nslcd.conf 2> /dev/null
+    sed -i -e 's/ldap:\/\/.*/ldap:\/\//g' -e 's/BASE.*/BASE/g' /etc/openldap/ldap.conf 2> /dev/null
+    printf "${GREEN}LDAP Configs Reset\n${NC}"
+}
+
+while getopts :hnfklz opt; do
     case $opt in
         h)
             printf "{$help_text}"
@@ -86,11 +98,16 @@ while getopts :hnfkz opt; do
             printf "${CYAN}Resetting Kerberos Configs\n${NC}"
             reset_kerberos
             ;;
+        l)
+            printf "${CYAN}Resetting LDAP Configs\n${NC}"
+            reset_ldap
+            ;;
         z)
             printf "${CYAN}Resetting Everything\n${NC}"
             reset_kerberos
             reset_network
             reset_firewalld
+            reset_ldap
             ;;
         \?)	printf "{$help_text}\n"
             ;;
