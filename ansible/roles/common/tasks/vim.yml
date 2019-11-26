@@ -2,14 +2,9 @@
 
 - name: Install basic Packages
   yum:
-    name: "{{ item }}"
+    name: ['vim-enhanced', 'screen', 'mlocate', 'bash-completion', 'git']
     state: present
-  with_items:
-    - vim-enhanced
-    - screen
-    - mlocate
-    - bash-completion
-    - git
+
 
 
 - name: Install Vundle
