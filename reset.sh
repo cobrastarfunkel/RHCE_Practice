@@ -15,7 +15,8 @@ help_text="${CYAN}$(basename "$0") Usage: [-h] [-n] [-f] [-k] -- Resets various 
     -n reset network interface scripts (you will have no connections or routes)
     -f remove firewall rules that aren't part of the default (ssh, dhcpv6-client)
     -k reset kerberos configs
-    -l reset LDAP configs
+    -l reset ldap configs (Client)
+    -i reset iscsi configs (target and initiator)
     -z Run all options listed above${NC}\n"
 
 [ $# -eq 0 ] && { printf "${help_text}"; exit 1; }
@@ -75,12 +76,29 @@ reset_kerberos() {
 ################################################
 reset_ldap() {
     yum remove -y openldap-clients nss-pam-ldapd 2>/dev/null
-    yes| rm /etc/nslcd.conf 2> /dev/null
-    sed -i -e 's/ldap:\/\/.*/ldap:\/\//g' -e 's/BASE.*/BASE/g' /etc/openldap/ldap.conf 2> /dev/null
+    yes| rm /etc/nslcd.conf 2>/dev/null
+    sed -i -e 's/ldap:\/\/.*/ldap:\/\//g' -e 's/BASE.*/BASE/g' /etc/openldap/ldap.conf 2>/dev/null
     printf "${GREEN}LDAP Configs Reset\n${NC}"
 }
 
-while getopts :hnfklz opt; do
+
+
+reset_iscsi_initiator() {
+    yum -y remove iscsi-initiator-utils
+    yes| rm -rI /etc/isci 2>/dev/null
+    yes| rm -rI /var/lib/iscsi/* 2>/dev/null
+    yum -y install iscsi-initiator-utils
+    printf "${GREEN}ISCSI Initiator Reset\n${NC}"
+}
+
+
+
+reset_iscsi_target() {
+    targetcli clearconfig confirm=True
+    yum -y remove targetcli
+    printf "${GREEN}ISCSI Target Reset\n${NC}"
+}
+while getopts :hnfkliz opt; do
     case $opt in
         h)
             printf "{$help_text}"
@@ -101,6 +119,15 @@ while getopts :hnfklz opt; do
         l)
             printf "${CYAN}Resetting LDAP Configs\n${NC}"
             reset_ldap
+            ;;
+        i)
+          if [ "$(rpm -qa | grep targetcli | wc -l)" -gt 0 ]; then
+              printf "${CYAN}Resetting ISCSI Target\n${NC}"
+              reset_iscsi_target
+          else
+              printf "${CYAN}Resetting ISCSI Initiator\n${NC}"
+              reset_iscsi_initiator
+          fi
             ;;
         z)
             printf "${CYAN}Resetting Everything\n${NC}"
