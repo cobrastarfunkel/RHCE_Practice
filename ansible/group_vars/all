@@ -4,4 +4,4 @@ short_domain: rhce
 
 inventory_location: "/etc/ansible/hosts"
 
-hosts_lookup: "{{ lookup('pipe', 'egrep \"=[1-9]{3}.[0-9]{3}.*\" ' + inventory_location + '| cut -d\" \" -f1') }}"
+hosts_lookup: "{{ lookup('pipe', 'egrep \"=[1-9]{3}.[0-9]{3}.*\" ' + inventory_location + '| cut -d\" \" -f1 | uniq') }}"
