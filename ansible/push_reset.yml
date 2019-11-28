@@ -7,3 +7,8 @@
       script: "{{ playbook_dir }}/reset.sh -i"
       args:
         chdir: /var/tmp
+      register: script_output
+
+    - name: Show Results
+      debug:
+        var: script_output.stdout_lines

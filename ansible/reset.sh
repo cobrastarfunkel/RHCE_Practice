@@ -64,8 +64,8 @@ reset_firewalld() {
 ################################################
 reset_kerberos() {
     yes| rm /etc/krb5.conf 2> /dev/null
-    yum -y remove krb5-workstation pam_krb5 2> /dev/null
-    yum -y reinstall krb5-libs 2> /dev/null
+    yum -y remove krb5-workstation pam_krb5 > /dev/null
+    yum -y reinstall krb5-libs > /dev/null
     printf "${GREEN}Kerberos Configs Reset\n${NC}"
 }
 
@@ -75,7 +75,7 @@ reset_kerberos() {
 # Reset ldap configs and remove packages
 ################################################
 reset_ldap() {
-    yum remove -y openldap-clients nss-pam-ldapd 2>/dev/null
+    yum remove -y openldap-clients nss-pam-ldapd >/dev/null
     yes| rm /etc/nslcd.conf 2>/dev/null
     sed -i -e 's/ldap:\/\/.*/ldap:\/\//g' -e 's/BASE.*/BASE/g' /etc/openldap/ldap.conf 2>/dev/null
     printf "${GREEN}LDAP Configs Reset\n${NC}"
@@ -84,10 +84,10 @@ reset_ldap() {
 
 
 reset_iscsi_initiator() {
-    yum -y remove iscsi-initiator-utils
+    yum -y remove iscsi-initiator-utils >/dev/null
     yes| rm -rI /etc/iscsi 2>/dev/null
     yes| rm -rI /var/lib/iscsi/* 2>/dev/null
-    yum -y install iscsi-initiator-utils
+    yum -y install iscsi-initiator-utils >/dev/null
     printf "${GREEN}ISCSI Initiator Reset\n${NC}"
 }
 
