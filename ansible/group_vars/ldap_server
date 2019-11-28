@@ -1,5 +1,6 @@
 ---
 ldap_port: 389
+ldap_gui_port: 80
 ldap_dir: /var/lib/ldap/
 
 list_of_schemas:

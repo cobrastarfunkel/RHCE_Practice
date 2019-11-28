@@ -6,7 +6,8 @@
            'screen', 
            'mlocate', 
            'bash-completion', 
-           'git']
+           'git',
+           'epel-release']
     state: present
 
 
