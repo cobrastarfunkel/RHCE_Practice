@@ -11,4 +11,4 @@
 
     - name: Show Results
       debug:
-        var: script_output.stdout_lines
+        msg: "{{ script_output.stdout_lines }}"
