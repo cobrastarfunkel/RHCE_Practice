@@ -85,7 +85,7 @@ reset_ldap() {
 
 reset_iscsi_initiator() {
     yum -y remove iscsi-initiator-utils
-    yes| rm -rI /etc/isci 2>/dev/null
+    yes| rm -rI /etc/iscsi 2>/dev/null
     yes| rm -rI /var/lib/iscsi/* 2>/dev/null
     yum -y install iscsi-initiator-utils
     printf "${GREEN}ISCSI Initiator Reset\n${NC}"
