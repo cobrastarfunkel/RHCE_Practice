@@ -11,6 +11,10 @@ TODO: Cover the rest of the inventory formats for hosts file
 
 The reset.sh script will reset your server.  It will remove network connections, reset firewalld, and clear out kerberos configs.  Run ./reset.sh -h to view options.  If you run it aginst the kerberos server or you have kerberos running on the same server you're using to practice it will break it.  Running the Ansible playbook again should fix it but for that reason it may be hard to practice setting up a kerberos client if the kerberos server is on the server you're practicing on.
 
+Run the push_reset.yml playbook to push out the script to other servers.  You can pass args for the reset script:
+
+     ansible-playbook push_reset.yml --extra-vars "reset_args=-i"
+
 Kerberos Setup
 ------
 #### Before you Run the Playbook
