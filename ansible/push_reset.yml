@@ -2,11 +2,13 @@
 - name: Push out the Reset Script
   hosts: iscsi_servers
   remote_user: root
-  vars:
-    vg_lookup: "{{ lookup('pipe', 'vgs | egrep -v \"centos|VG\"| cut -d\" \" -f3') }}"
   tasks:
+    - name: Get vg name
+      shell: "vgs | egrep -v \"centos|VG\"| cut -d\" \" -f3"
+      register: vg_lookup
+
     - name: Push Script
-      script: "{{ playbook_dir }}/reset.sh -i"
+      script: "{{ playbook_dir }}/reset.sh {{ reset_args|default('-h') }}"
       args:
         chdir: /var/tmp
       register: script_output
@@ -17,4 +19,4 @@
 
     - name: Test
       debug:
-        msg: "{{ vg_lookup }}"
+        msg: "{{ vg_lookup.stdout }}"
