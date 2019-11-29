@@ -5,7 +5,8 @@ This is meant to study for the RHCE by setting up some of the requirments to pra
 
 TOC
 ====
-[LDAP Setup](#LDAP-setup)
+* [Kerberos Setup](#Kerberos-setup)
+* [LDAP Setup](#LDAP-setup)
 
 TODO: Fix how hostname is set, ansible will assign the ip if you run the playbook against an individual host using the -i flag.
 
