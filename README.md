@@ -5,15 +5,15 @@ This is meant to study for the RHCE by setting up some of the requirments to pra
 
 TOC
 ====
-[LDAP Setup][ldap_setup]
+[LDAP Setup](#LDAP-setup)
+
 TODO: Fix how hostname is set, ansible will assign the ip if you run the playbook against an individual host using the -i flag.
 
 ###### NOTE: /etc/hosts is based off of the ansible inventory file.  Set the path in group_vars/all.  It greps out your uncommented ansible host assignments.  It only looks for hosts in this format "hostname ansible_host=192.168.1.2".
 
 TODO: Cover the rest of the inventory formats for hosts file
 
-Reset Servers
-------
+### Reset Servers
 The reset.sh script will reset your server.  It will remove network connections, reset firewalld, and clear out kerberos and ldap configs.  Run ./reset.sh -h to view options.  If you run it aginst the kerberos server or you have kerberos running on the same server you're using to practice it will break it.  Running the Ansible playbook again should fix it but for that reason it may be hard to practice setting up a kerberos client if the kerberos server is on the server you're practicing on.
 
 Volume groups can be removed with the reset script if you want it to.  Set the names of the volume groups in the push_reset.yml (Keep this as a list even if you only have one lvm, so keep the same ['vgname'] format) and pass an extra variable(Example Below) setting remove_vgs to True.
@@ -22,8 +22,7 @@ Run the push_reset.yml playbook to push out the script to other servers.  You ca
 
      ansible-playbook push_reset.yml --extra-vars "reset_args=-i, remove_vgs=True"
 
-Kerberos Setup
-------
+### Kerberos Setup
 #### Before you Run the Playbook
 * In ansible/group_vars/kdc_server change ports if you want.
 * The KDC server is defined by the hosts file under [kdc_server].  Define the host you want to be the Kerberos server here.
@@ -69,8 +68,7 @@ Run:
   
     ssh -k kerberos_server_hostname
 
-[ldap_setup]:LDAP Setup
-------
+### LDAP Setup
 #### Before you Run the Playbook
 * Configure the LDAP server in the hosts file.  In the example we're using the KDC as the LDAP server.
 * Set the ldap port in group_vars/ldap_server if you want it to be something else.
