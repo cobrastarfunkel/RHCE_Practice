@@ -87,7 +87,7 @@ Run:
 Run:
 
     ansible-playbook ldap.yml --ask-vault-pass
-  *Note: You don't need the --ask-vault-pass if you chose to not encrypt your password
+  *Note: You don't need the --ask-vault-pass if you chose to not encrypt your password*
 
 To test Run:
 
