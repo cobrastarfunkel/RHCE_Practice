@@ -17,7 +17,7 @@
         vg: "{{ item }}"
         state: absent
       loop: "{{ vgs_to_remove }}"
-      when: remove_vgs|default('False')
+      when: remove_vgs is defined
 
     - name: Show Results
       debug:
