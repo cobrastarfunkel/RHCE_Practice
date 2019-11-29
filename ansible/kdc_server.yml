@@ -1,0 +1,6 @@
+
+- name: Build KDC Server
+  hosts: kdc_server
+  remote_user: root
+  roles:
+    - kdc

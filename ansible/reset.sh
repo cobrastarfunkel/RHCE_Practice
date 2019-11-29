@@ -52,7 +52,7 @@ reset_network() {
 ################################################
 reset_firewalld() {
     yes| rm -I /etc/firewalld/zones/* 2> /dev/null
-    firewall-cmd --reload
+    firewall-cmd --reload > /dev/null
     printf "${GREEN}Firewall rules reset\n${NC}"
 }
 
