@@ -2,25 +2,23 @@
 - name: Push out the Reset Script
   hosts: iscsi_servers
   remote_user: root
-  tasks:
-    - name: Get vg name
-      shell: "vgs | egrep -v \"centos|VG\"| cut -d\" \" -f3"
-      register: vg_lookup
+  vars:
+    vgs_to_remove: ['vg_one', 'vg_two']
 
+  tasks:
     - name: Push Script
       script: "{{ playbook_dir }}/reset.sh {{ reset_args|default('-h') }}"
       args:
         chdir: /var/tmp
       register: script_output
 
-#    - name: Remove Volume Group
-#      shell: "vgremove {{ vg_name|default(none) }}"
-#      when: 
+    - name: Remove VG's
+      lvg:
+        vg: "{{ item }}"
+        state: absent
+      loop: "{{ vgs_to_remove }}"
+      when: remove_vgs|default('False')
 
     - name: Show Results
       debug:
         msg: "{{ script_output.stdout_lines }}"
-
-    - name: Test
-      debug:
-        msg: "{{ vg_lookup.stdout.split('\n') }}"
