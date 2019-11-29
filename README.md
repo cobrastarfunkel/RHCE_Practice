@@ -9,11 +9,15 @@ TODO: Fix how hostname is set, ansible will assign the ip if you run the playboo
 
 TODO: Cover the rest of the inventory formats for hosts file
 
-The reset.sh script will reset your server.  It will remove network connections, reset firewalld, and clear out kerberos configs.  Run ./reset.sh -h to view options.  If you run it aginst the kerberos server or you have kerberos running on the same server you're using to practice it will break it.  Running the Ansible playbook again should fix it but for that reason it may be hard to practice setting up a kerberos client if the kerberos server is on the server you're practicing on.
+Reset Servers
+------
+The reset.sh script will reset your server.  It will remove network connections, reset firewalld, and clear out kerberos and ldap configs.  Run ./reset.sh -h to view options.  If you run it aginst the kerberos server or you have kerberos running on the same server you're using to practice it will break it.  Running the Ansible playbook again should fix it but for that reason it may be hard to practice setting up a kerberos client if the kerberos server is on the server you're practicing on.
+
+Volume groups can be removed with the reset script if you want it to.  Set the names of the volume groups in the push_reset.yml (Keep this as a list een if you only have one lvm, so keep the same ['vgname'] format) and pass an extra variable(Example Below) setting remove_vgs to True.
 
 Run the push_reset.yml playbook to push out the script to other servers.  You can pass args for the reset script:
 
-     ansible-playbook push_reset.yml --extra-vars "reset_args=-i"
+     ansible-playbook push_reset.yml --extra-vars "reset_args=-i, remove_vgs=True"
 
 Kerberos Setup
 ------
