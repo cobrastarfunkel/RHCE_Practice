@@ -13,10 +13,14 @@
         chdir: /var/tmp
       register: script_output
 
+#    - name: Remove Volume Group
+#      shell: "vgremove {{ vg_name|default(none) }}"
+#      when: 
+
     - name: Show Results
       debug:
         msg: "{{ script_output.stdout_lines }}"
 
     - name: Test
       debug:
-        msg: "{{ vg_lookup.stdout }}"
+        msg: "{{ vg_lookup.stdout.split('\n') }}"
