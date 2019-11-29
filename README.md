@@ -22,6 +22,8 @@ Volume groups can be removed with the reset script if you want it to.  Set the n
 Run the push_reset.yml playbook to push out the script to other servers.  You can pass args to the playbook by using --extra-vars:
 
      ansible-playbook push_reset.yml --extra-vars "reset_args=-i, remove_vgs=True"
+     
+###### Does not remove physical volumes.
 
 ### Kerberos Setup
 #### Before you Run the Playbook
