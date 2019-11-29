@@ -16,6 +16,7 @@
       lvg:
         vg: "{{ item }}"
         state: absent
+        force: yes
       loop: "{{ vgs_to_remove }}"
       when: remove_vgs is defined
 
