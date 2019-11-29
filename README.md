@@ -27,7 +27,7 @@ Kerberos Setup
     
 Run playbook:
     
-    ansible-playbook rhce_prep.yml
+    ansible-playbook kdc.yml
 
 Login to Kerberos server and Run:
 
