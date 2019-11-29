@@ -3,6 +3,9 @@ RHCE TEST PREP
 This is meant to study for the RHCE by setting up some of the requirments to practice exam objectives.
 ##### Hostnames and fqdn's are set by ansible.  Configure group_vars/all "long_domain" "short_domain" for the domain and the "ansible_hostname" in the inventory file for the hostname. 
 
+TOC
+====
+[LDAP Setup][ldap_setup]
 TODO: Fix how hostname is set, ansible will assign the ip if you run the playbook against an individual host using the -i flag.
 
 ###### NOTE: /etc/hosts is based off of the ansible inventory file.  Set the path in group_vars/all.  It greps out your uncommented ansible host assignments.  It only looks for hosts in this format "hostname ansible_host=192.168.1.2".
@@ -66,7 +69,7 @@ Run:
   
     ssh -k kerberos_server_hostname
 
-LDAP Setup
+[ldap_setup]:LDAP Setup
 ------
 #### Before you Run the Playbook
 * Configure the LDAP server in the hosts file.  In the example we're using the KDC as the LDAP server.
