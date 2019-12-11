@@ -1,6 +1,6 @@
 
 - name: Apply common to all nodes
   hosts: all
-  remote_user: root
   roles:
     - common
+  become: yes

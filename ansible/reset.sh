@@ -107,6 +107,15 @@ reset_iscsi_target() {
 
 
 
+################################################
+# Remove autofs stuff
+################################################
+reset_autofs() {
+    yum -y remove autofs nfs-utils
+}
+
+
+
 while getopts :hnfkliz opt; do
     case $opt in
         h)
@@ -144,11 +153,13 @@ while getopts :hnfkliz opt; do
             reset_network
             reset_firewalld
             reset_ldap
+            reset_autofs
             if [ "$(rpm -qa | grep targetcli | wc -l)" -gt 0 ]; then
               reset_iscsi_target
             else
               reset_iscsi_initiator
             fi
+            printf "${GREEN}Everything Reset\n${NC}"
             ;;
         \?)	
             printf "{$help_text}\n"

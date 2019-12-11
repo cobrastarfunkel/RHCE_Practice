@@ -1,7 +1,6 @@
 
 - name: Push out the Reset Script
-  hosts: iscsi_servers
-  remote_user: root
+  hosts: rhce_clients
   vars:
     vgs_to_remove: ['vg_one', 'vg_two']
 
