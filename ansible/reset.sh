@@ -17,10 +17,20 @@ help_text="${CYAN}$(basename "$0") Usage: [-h] [-n] [-f] [-k] -- Resets various 
     -k reset kerberos configs
     -l reset ldap configs (Client)
     -i reset iscsi configs (target and initiator)
-    -z Run all options listed above${NC}\n"
+    -s Set SELinux to permissive mode if not already enabled
+    -z Run all options listed above NOTE: Enables SELinux(Permissive mode) and tells you to reboot if you have it disabled${NC}\n"
 
 [ $# -eq 0 ] && { printf "${help_text}"; exit 1; }
 
+turn_on_selinux() {
+      selinux_status=$(grep "SELINUX=" /etc/selinux/config | grep -v "#" | cut -d= -f 2)
+      if [ "$selinux_status" = "disabled" ]; then
+        sed -i 's/SELINUX=disabled/SELINUX=permissive/' /etc/selinux/config
+        printf "${RED}Reboot required SELinux changed from disabled to permissive\n${NC}"
+      else
+        printf "${GREEN}SELinux already enabled\n${NC}"
+      fi
+}
 
 
 ################################################
@@ -116,7 +126,7 @@ reset_autofs() {
 
 
 
-while getopts :hnfkliz opt; do
+while getopts :hnfklisz opt; do
     case $opt in
         h)
             printf "{$help_text}"
@@ -147,8 +157,12 @@ while getopts :hnfkliz opt; do
               reset_iscsi_initiator
           fi
             ;;
+        s)
+            turn_on_selinux
+            ;;
         z)
             printf "${CYAN}Resetting Everything\n${NC}"
+            turn_on_selinux
             reset_kerberos
             reset_network
             reset_firewalld
