@@ -19,4 +19,14 @@
     src: files/screenrc
     dest: /etc/screenrc
 
+- name: Copy profile.d scripts
+  copy:
+    src: "files/{{ item }}"
+    dest: /etc/profile.d/
+  with_items:
+    - 99_vim.sh
+    - 99_prompt.sh
+    - 00_alias.sh
+
+
 
