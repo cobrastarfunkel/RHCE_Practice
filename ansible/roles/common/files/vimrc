@@ -17,6 +17,7 @@ call vundle#begin()
  " " Plugin 'L9'
  " " Git plugin not hosted on GitHub
  Plugin 'git://git.wincent.com/command-t.git'
+ Plugin 'altercation/vim-colors-solarized'
  " " git repos on your local machine (i.e. when working on your own plugin)
  " Plugin 'file:///home/gmarik/path/to/plugin'
  " " The sparkup vim script is in a subdirectory of this repo called vim.
@@ -33,7 +34,10 @@ call vundle#begin()
  " " NerdTree
  Plugin 'scrooloose/nerdtree'
  " " Jinja Syntax
- Plugin 'Glench/Vim-Jinja2-Syntax'
+ " " Plugin 'Glench/Vim-Jinja2-Syntax'
+ " " Ansible Syntax
+ Plugin 'pearofducks/ansible-vim'
+ Plugin 'morhetz/gruvbox'
 
  " " All of your Plugins must be added before the following line
  call vundle#end()            " required
@@ -48,9 +52,10 @@ call vundle#begin()
  " " :PluginSearch foo - searches for foo; append `!` to refresh local cache
  " " :PluginClean      - confirms removal of unused plugins; append `!` to
  " auto-approve removal
- " "
+ "" "
  " " see :h vundle for more details or wiki for FAQ
  " " Put your non-Plugin stuff after this line
+ 
 
  if v:lang =~ "utf8$" || v:lang =~ "UTF-8$"
     set fileencodings=ucs-bom,utf-8,latin1
@@ -74,7 +79,15 @@ call vundle#begin()
     set t_Co=256
     syntax on
     set hlsearch
-    colo delek
+    set background=dark
+    colorscheme gruvbox
+
+    " netrw settings
+    let g:netrw_liststyle = 3
+    let g:netrw_banner = 0
+    let g:netrw_browse_split = 4
+    "let g:netrw_winsize = 10
+    let g:netrw_altv = 1
 
            " Only do this part when compiled with support for autocommands
 if has("autocmd")
@@ -88,7 +101,7 @@ if has("autocmd")
   \   exe "normal! g'\"" |
   \ endif
   " don't write swapfile on most commonly used directories for NFS mounts or USB sticks
-  autocmd BufNewFile,BufReadPre /media/*,/run/media/*,/mnt/* set directory=~/tmp,/var/tmp,/tmp
+  autocmd BufNewFile,BufReadPre /media/*,/run/media/*,/mnt/* set directory=/var/tmp,/tmp
   " start with spec file template
   autocmd BufNewFile *.spec 0r /usr/share/vim/vimfiles/template.spec
   augroup END
@@ -150,5 +163,5 @@ if !has('gui_running')
 endif
 
 let g:lightline = {
-     \ 'colorscheme': 'PaperColor',
+     \ 'colorscheme': 'wombat',
      \ }

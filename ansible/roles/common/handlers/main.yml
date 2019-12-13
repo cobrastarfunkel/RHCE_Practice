@@ -1,5 +1,11 @@
 
 - name: load vim plugins
   shell:
-    cmd: vim +PluginInstall +qall
+    cmd: yes|vim +PluginInstall +qall
+  notify:
+    - Clean Plugins
+
+- name: Clean Plugins
+  shell:
+    cmd: yes|vim +PluginClean +qall
 
