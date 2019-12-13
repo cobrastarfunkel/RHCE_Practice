@@ -1,1 +1,1 @@
-export PS1="\e[0;34m\u@\h \w> \e[m"
+export PS1="\[\033[0;32m\]\u@\h \w> \[\033[0m\]"
