@@ -3,6 +3,7 @@
   hosts: rhce_clients
   vars:
     vgs_to_remove: ['vg_one', 'vg_two']
+    device_to_remove: /dev/sdb
 
   tasks:
     - name: Push Script
@@ -18,6 +19,19 @@
         force: yes
       loop: "{{ vgs_to_remove }}"
       when: remove_vgs is defined
+
+    - name: Find partitions
+      parted:
+        device: "{{ device_to_remove }}"
+      register: part_info
+
+    - name: Remove Parts
+      parted:
+        device: "{{ device_to_remove }}"
+        number: "{{ item.num }}"
+        state: absent
+      loop: "{{ part_info.partitions }}"
+      when: remove_parts is defined
 
     - name: Show Results
       debug:
