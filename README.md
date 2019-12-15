@@ -19,11 +19,13 @@ The reset.sh script will reset your server.  It will remove network connections,
 
 Volume groups can be removed with the reset script if you want it to.  Set the names of the volume groups in the push_reset.yml (Keep this as a list even if you only have one lvm, so keep the same ['vgname'] format) and pass an extra variable(Example Below) setting remove_vgs to True.
 
+Partitions can also be removed.  The default is sdb but change it to whatever device the partitions you want to remove were created on in the push_reset.yml file under device_to_remove. **It will remove all partitions from that device.**
+
 Run the push_reset.yml playbook to push out the script to other servers.  You can pass args to the playbook by using --extra-vars:
 
-     ansible-playbook push_reset.yml --extra-vars "reset_args=-i, remove_vgs=True"
+     ansible-playbook push_reset.yml --extra-vars "reset_args=-i, remove_vgs=True, remove_parts=True"
      
-###### Does not remove physical volumes.
+###### All extra vars are optional but it won't do anything if you don't define any.
 
 ### Kerberos Setup
 #### Before you Run the Playbook
