@@ -38,7 +38,7 @@ turn_on_selinux() {
 ################################################
 reset_network() {
     # Clear out Network Configs
-    find /etc/sysconfig/network-scripts/ -not -regex '.*ifcfg-[lo].*' -regex '.*ifcfg-.*' -exec rm {} +
+    find /etc/sysconfig/network-scripts/ -not -regex '.*ifcfg-[lo|{{ mgmt_interface }}].*' -regex '.*ifcfg-.*' -exec rm {} +
 
     # Clear Routes
     ip route flush all

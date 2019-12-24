@@ -4,10 +4,17 @@
   vars:
     vgs_to_remove: ['vg_one', 'vg_two']
     device_to_remove: /dev/sdb
+    mgmt_interface: mgmt
 
   tasks:
+    - name: Template Script
+      template:
+        src: "{{ playbook_dir }}/reset.sh"
+        dest: "{{ playbook_dir }}/templated_reset.sh"
+      delegate_to: 127.0.0.1
+
     - name: Push Script
-      script: "{{ playbook_dir }}/reset.sh {{ reset_args|default('-h') }}"
+      script: "{{ playbook_dir }}/templated_reset.sh {{ reset_args|default('-h') }}"
       args:
         chdir: /var/tmp
       register: script_output
