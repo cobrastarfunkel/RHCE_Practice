@@ -119,6 +119,7 @@ reset_iscsi_initiator() {
 reset_iscsi_target() {
     targetcli clearconfig confirm=True
     yum -y remove targetcli
+    yes| rm -rI /etc/target 2>/dev/null
     printf "${GREEN}ISCSI Target Reset\n${NC}"
 }
 

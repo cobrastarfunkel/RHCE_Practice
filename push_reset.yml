@@ -40,7 +40,7 @@
 
     - name: Show Results
       debug:
-        msg: "{{ script_output.stdout_lines }} \n {{ part_info }} "
+        msg: "{{ script_output }} "
 
 # HANDLERS
   handlers:
