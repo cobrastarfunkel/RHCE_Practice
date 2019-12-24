@@ -5,6 +5,7 @@ This is meant to study for the RHCE by setting up some of the requirments to pra
 
 TOC
 ====
+* [Reset Servers](#Reset-Servers)
 * [Kerberos Server Setup](#Kerberos-setup)
 * [LDAP Server Setup](#LDAP-setup)
 
@@ -17,10 +18,16 @@ TODO: Cover the rest of the inventory formats for hosts file
 ### Reset Servers
 The reset.sh script will reset your server.  It will remove network connections, reset firewalld, and clear out kerberos and ldap configs.  Run ./reset.sh -h to view options.  If you run it aginst the kerberos server or you have kerberos running on the same server you're using to practice it will break it.  Running the Ansible playbook again should fix it but for that reason it may be hard to practice setting up a kerberos client if the kerberos server is on the server you're practicing on.
 
+#### Volume Groups
 Volume groups can be removed with the reset script if you want it to.  Set the names of the volume groups in the push_reset.yml (Keep this as a list even if you only have one lvm, so keep the same ['vgname'] format) and pass an extra variable(Example Below) setting remove_vgs to True.
 
+#### Partitions
 Partitions can also be removed.  The default is sdb but change it to whatever device the partitions you want to remove were created on in the push_reset.yml file under device_to_remove. **It will remove all partitions from that device.**
 
+#### Network Interfaces
+Assign the name of the connection you want preserved to the mgmt_interface variable in push_reset.yml.  This is the ifcfg-{{ name }} of the file under /etc/sysconfig/network-scripts.  This is so the server can still be accessed by SSH instead of having to directly access it through the console.
+
+#### Reseting
 Run the push_reset.yml playbook to push out the script to other servers.  You can pass args to the playbook by using --extra-vars:
 
      ansible-playbook push_reset.yml --extra-vars "reset_args=-i, remove_vgs=True, remove_parts=True"
