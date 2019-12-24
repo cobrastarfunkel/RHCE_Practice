@@ -16,7 +16,7 @@ TODO: Fix how hostname is set, ansible will assign the ip if you run the playboo
 TODO: Cover the rest of the inventory formats for hosts file
 
 ### Reset Servers Script
-The reset.sh script will reset your server but you can't run it manually until you run the push_reset.yml playbook atleast oncce.  The script has a jinja variable in it that needs to be set.  After you run the playbook the templated_reset.sh can be run manually if you want.
+The reset.sh script will reset your server but you can't run the Network interfaces option manually until you run the push_reset.yml playbook atleast once.  The script has a jinja variable in it that needs to be set.  After you run the playbook the templated_reset.sh can be run manually if you want.
 
 #### Volume Groups
 Volume groups can be removed with the reset script if you want it to.  Set the names of the volume groups in the push_reset.yml (Keep this as a list even if you only have one lvm, so keep the same ['vgname'] format) and pass an extra variable(Example Below) setting remove_vgs to True.
