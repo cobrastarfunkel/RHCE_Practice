@@ -22,7 +22,7 @@ The reset.sh script will reset your server.  It will remove network connections,
 Volume groups can be removed with the reset script if you want it to.  Set the names of the volume groups in the push_reset.yml (Keep this as a list even if you only have one lvm, so keep the same ['vgname'] format) and pass an extra variable(Example Below) setting remove_vgs to True.
 
 #### Partitions
-Partitions can also be removed.  The default is sdb but change it to whatever device the partitions you want to remove were created on in the push_reset.yml file under device_to_remove and pass an extra variable(Example Below) setting remove_parts to True. **It will remove all partitions from that device.**
+Partitions can also be removed.  The default is sdb but change it to whatever device the partitions you want to remove were created on in the push_reset.yml file under device_to_remove and pass an extra variable(Example Below) setting remove_parts to True. **It will remove all partitions from that device. You should also make sure the vg's are being removed because they will still exist if the partition is deleted and so wil the pv's.**
 
 #### Network Interfaces
 Assign the name of the connection you want preserved to the mgmt_interface variable in push_reset.yml.  This is the ifcfg-{{ name }} of the file under /etc/sysconfig/network-scripts.  This is so the server can still be accessed by SSH instead of having to directly access it through the console.
