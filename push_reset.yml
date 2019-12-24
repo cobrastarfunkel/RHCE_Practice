@@ -24,7 +24,7 @@
 # appears in the future.
     - name: Find Block Nums
       shell: "lsblk | egrep \"{{ device_to_remove.split('/')[2] }}[0-9].*\" | awk '{print $1}' | sed 's/[^0-9]*//g'"
-      when: remove_vgs is defined
+      when: remove_vgs is defined or remove_parts is defined
       register: pv_blocks
       notify: 
         - Remove VG's
@@ -35,10 +35,12 @@
         device: "{{ device_to_remove }}"
       register: part_info
       when: remove_parts is defined
+      changed_when: True
+      notify: Remove Parts
 
     - name: Show Results
       debug:
-        msg: "{{ script_output.stdout_lines }} "
+        msg: "{{ script_output.stdout_lines }} \n {{ part_info }} "
 
 # HANDLERS
   handlers:
