@@ -1,8 +1,8 @@
-
+---
 - name: Push out the Reset Script
   hosts: rhce_clients
   vars:
-    vgs_to_remove: ['vg_one', 'vg_two']
+    vgs_to_remove: ['vg_test', 'vg_two']
     device_to_remove: /dev/sdb
     mgmt_interface: mgmt
 
@@ -19,18 +19,40 @@
         chdir: /var/tmp
       register: script_output
 
+# This is uneccessary due to the Find Partitions below but I'm leaving it as a reference
+# in case a similar situation that doesn't have a module that will pull info for 
+# appears in the future.
+    - name: Find Block Nums
+      shell: "lsblk | egrep \"{{ device_to_remove.split('/')[2] }}[0-9].*\" | awk '{print $1}' | sed 's/[^0-9]*//g'"
+      when: remove_vgs is defined
+      register: pv_blocks
+      notify: 
+        - Remove VG's
+        - Remove PV's
+
+    - name: Find partitions
+      parted:
+        device: "{{ device_to_remove }}"
+      register: part_info
+      when: remove_parts is defined
+
+    - name: Show Results
+      debug:
+        msg: "{{ script_output.stdout_lines }} "
+
+# HANDLERS
+  handlers:
     - name: Remove VG's
       lvg:
         vg: "{{ item }}"
         state: absent
         force: yes
       loop: "{{ vgs_to_remove }}"
-      when: remove_vgs is defined
 
-    - name: Find partitions
-      parted:
-        device: "{{ device_to_remove }}"
-      register: part_info
+    - name: Remove PV's
+      command: pvremove '{{ device_to_remove }}{{ item }}'
+      loop: "{{ pv_blocks.stdout.split('\n') }}"
+      ignore_errors: yes
 
     - name: Remove Parts
       parted:
@@ -38,8 +60,18 @@
         number: "{{ item.num }}"
         state: absent
       loop: "{{ part_info.partitions }}"
-      when: remove_parts is defined
 
-    - name: Show Results
-      debug:
-        msg: "{{ script_output.stdout_lines }}"
+
+
+
+
+
+
+
+
+
+
+
+
+
+
