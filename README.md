@@ -1,6 +1,6 @@
 RHCE TEST PREP
 ======
-This is meant to study for the RHCE by setting up some of the requirments to practice exam objectives.
+This is meant to study for the RHCE by setting up some of the requirements to practice exam objectives.
 ##### Hostnames and fqdn's are set by ansible.  Configure group_vars/all "long_domain" "short_domain" for the domain and the "ansible_hostname" in the inventory file for the hostname. 
 
 TOC
