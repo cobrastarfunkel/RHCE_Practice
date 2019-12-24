@@ -164,6 +164,12 @@ if !has('gui_running')
   set t_Co=256
 endif
 
+if &term =~ '256color'
+ " disable Background Color Erase (BCE) so that color schemes
+ "   " render properly when inside 256-color GNU screen.
+  set t_ut=
+endif
+
 let g:lightline = {
      \ 'colorscheme': 'wombat',
      \ }
