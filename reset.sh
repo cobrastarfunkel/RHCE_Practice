@@ -34,7 +34,14 @@ turn_on_selinux() {
 
 
 ################################################
-# Reset Newtork configs by removing ifcfg files
+# Reset Network configs by removing ifcfg files
+#
+# vars:
+#   mgmt_interface: defined in rhce_prep.yml
+#     This is the name of the interface that
+#     you would like to keep available when
+#     the network is reset so you can still
+#     ssh.
 ################################################
 reset_network() {
     # Clear out Network Configs
@@ -101,7 +108,6 @@ reset_iscsi_initiator() {
     yum -y remove iscsi-initiator-utils >/dev/null
     yes| rm -rI /etc/iscsi 2>/dev/null
     yes| rm -rI /var/lib/iscsi/* 2>/dev/null
-    yum -y install iscsi-initiator-utils >/dev/null
     printf "${GREEN}ISCSI Initiator Reset\n${NC}"
 }
 
