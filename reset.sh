@@ -9,9 +9,11 @@ CYAN='\033[0;36m'
 LCYAN='\033[1;36m'
 NC='\033[0m'
 
-help_text="${CYAN}$(basename "$0") Usage: [-h] [-n] [-f] [-k] -- Resets various settings used for RHCE prep to make practice more efficient
+help_text="${CYAN}$(basename "$0") Usage: [-hnfk] -- Resets various settings used for RHCE prep to make practice more efficient
 
     -h print this text
+    -d This assumes you're using unbound for a cahing nameserver.  It removes it and all its configs
+    -m Remove postfix configs
     -n reset network interface scripts (you will have no connections or routes)
     -f remove firewall rules that aren't part of the default (ssh, dhcpv6-client)
     -k reset kerberos configs
@@ -45,7 +47,8 @@ turn_on_selinux() {
 ################################################
 reset_network() {
     # Clear out Network Configs
-    find /etc/sysconfig/network-scripts/ -not -regex '.*ifcfg-[lo|{{ mgmt_interface }}].*' -regex '.*ifcfg-.*' -exec rm {} +
+#    find /etc/sysconfig/network-scripts/ -not -regex '.*ifcfg-[lo|{{ mgmt_interface }}].*' -regex '.*ifcfg-.*' -exec rm {} +
+    ls /etc/sysconfig/network-scripts/ifcfg-* | grep -P '.*ifcfg-(?!(lo|{{ mgmt_interface }})+).*' | xargs rm
 
     # Clear Routes
     ip route flush all
@@ -130,15 +133,42 @@ reset_iscsi_target() {
 ################################################
 reset_autofs() {
     yum -y remove autofs nfs-utils
+    printf "${GREEN}Autofs Reset\n${NC}"
 }
 
 
 
-while getopts :hnfklisz opt; do
+################################################
+# Remove Unbound and its config
+################################################
+reset_caching_nameserver() {
+    yum -y remove unbound
+    yes| rm -rI /etc/unbound 2>/dev/null
+    printf "${GREEN}Caching Nameserver Reset\n${NC}"
+}
+
+
+
+################################################
+# Remove postfix and main.cf
+################################################
+reset_postfix() {
+    yes| rm -rI /etc/postfix/main.cf 2>/dev/null
+    yum -y reinstall postfix
+    printf "${GREEN}Postfix Reset\n${NC}"
+}
+
+
+
+while getopts :dhmnfklisz opt; do
     case $opt in
         h)
             printf "{$help_text}"
             exit
+            ;;
+        m)
+            printf "${CYAN}Resetting Postfix \n${NC}"
+            reset_postfix
             ;;
         n)
             printf "${CYAN}Resetting Network Configs\n${NC}"
@@ -168,8 +198,13 @@ while getopts :hnfklisz opt; do
         s)
             turn_on_selinux
             ;;
+        d)
+            printf "${CYAN}Resetting Caching NameServer \n${NC}"
+            reset_caching_nameserver
+            ;;
         z)
             printf "${CYAN}Resetting Everything\n${NC}"
+            reset_postfix
             turn_on_selinux
             reset_kerberos
             reset_network
@@ -181,6 +216,7 @@ while getopts :hnfklisz opt; do
             else
               reset_iscsi_initiator
             fi
+            reset_caching_nameserver
             printf "${GREEN}Everything Reset\n${NC}"
             ;;
         \?)	
