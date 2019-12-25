@@ -9,7 +9,7 @@ TOC
 * [Kerberos Server Setup](#Kerberos-setup)
 * [LDAP Server Setup](#LDAP-setup)
 
-TODO: Fix how hostname is set, ansible will assign the ip if you run the playbook against an individual host using the -i flag.
+TODO: Fix how hostname is set, ansible will assign the ip if you run the rhce_prep.yml playbook against an individual host using the -i flag.
 
 ###### NOTE: /etc/hosts is based off of the ansible inventory file.  Set the path in group_vars/all.  It greps out your uncommented ansible host assignments.  It only looks for hosts in this format "hostname ansible_host=192.168.1.2".
 
@@ -19,6 +19,7 @@ TODO: Cover the rest of the inventory formats for hosts file
 The reset.sh script will reset your server but you can't run the Network interfaces option manually until you run the push_reset.yml playbook atleast once.  The script has a jinja variable in it that needs to be set.  After you run the playbook the templated_reset.sh can be run manually if you want.
 
 #### Volume Groups
+##### NOTE: Entries in fstab are not removed so those need to be cleaned up when you remove vgs and or partitions.  
 Volume groups can be removed with the reset script if you want it to.  Set the names of the volume groups in the push_reset.yml (Keep this as a list even if you only have one lvm, so keep the same ['vgname'] format) and pass an extra variable(Example Below) setting remove_vgs to True.
 
 #### Partitions
