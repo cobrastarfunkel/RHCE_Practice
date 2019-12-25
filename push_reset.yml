@@ -2,7 +2,7 @@
 - name: Push out the Reset Script
   hosts: rhce_clients
   vars:
-    vgs_to_remove: ['vg_test', 'vg_iscsi']
+    vgs_to_remove: ['vg_rhce', 'vg_iscsi']
     device_to_remove: /dev/sdb
     mgmt_interface: mgmt
     isci_file_loc: /root/iscsi_file
@@ -41,7 +41,7 @@
 
     - name: Show Results
       debug:
-        msg: "{{ script_output }} "
+        msg: "{{ script_output.stdout }} "
 
 # HANDLERS
   handlers:

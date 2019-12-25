@@ -132,7 +132,6 @@ reset_iscsi_initiator() {
     yum -y remove iscsi-initiator-utils >/dev/null
     yes| rm -rI /etc/iscsi 2>/dev/null
     yes| rm -rI /var/lib/iscsi/* 2>/dev/null
-    yes| rm {{ isci_file_loc }}
     printf "${GREEN}ISCSI Initiator Reset\n${NC}"
 }
 
@@ -146,6 +145,7 @@ reset_iscsi_target() {
     targetcli clearconfig confirm=True
     yum -y remove targetcli
     yes| rm -rI /etc/target 2>/dev/null
+    yes| rm {{ isci_file_loc }}
     printf "${GREEN}ISCSI Target Reset\n${NC}"
 }
 
