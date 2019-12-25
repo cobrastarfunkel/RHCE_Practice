@@ -128,6 +128,7 @@ reset_ldap() {
 # Reset Iscsi Initiator
 ################################################
 reset_iscsi_initiator() {
+    systemctl disable {iscsi,iscsid}
     yum -y remove iscsi-initiator-utils >/dev/null
     yes| rm -rI /etc/iscsi 2>/dev/null
     yes| rm -rI /var/lib/iscsi/* 2>/dev/null
@@ -141,6 +142,7 @@ reset_iscsi_initiator() {
 # Reset Iscsi Target
 ################################################
 reset_iscsi_target() {
+    systemctl disable target
     targetcli clearconfig confirm=True
     yum -y remove targetcli
     yes| rm -rI /etc/target 2>/dev/null
@@ -163,6 +165,7 @@ reset_autofs() {
 # Remove Unbound and its config
 ################################################
 reset_caching_nameserver() {
+    systemctl disable unbound
     yum -y remove unbound
     yes| rm -rI /etc/unbound 2>/dev/null
     printf "${GREEN}Caching Nameserver Reset\n${NC}"
@@ -174,6 +177,7 @@ reset_caching_nameserver() {
 # Remove postfix and main.cf
 ################################################
 reset_postfix() {
+    systemctl disable postfix
     yes| rm -rI /etc/postfix/main.cf 2>/dev/null
     yum -y reinstall postfix
     printf "${GREEN}Postfix Reset\n${NC}"
@@ -184,7 +188,7 @@ reset_postfix() {
 while getopts :dhmnfkliqsz opt; do
     case $opt in
         h)
-            printf "{$help_text}"
+            printf "{$help_text}\n"
             exit
             ;;
         m)
@@ -250,7 +254,3 @@ while getopts :dhmnfkliqsz opt; do
             ;;
     esac
 done
-
-
-
-
