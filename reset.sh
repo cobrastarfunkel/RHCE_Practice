@@ -12,13 +12,15 @@ NC='\033[0m'
 help_text="${CYAN}$(basename "$0") Usage: [-hnfk] -- Resets various settings used for RHCE prep to make practice more efficient
 
     -h print this text
+
     -d This assumes you're using unbound for a cahing nameserver.  It removes it and all its configs
-    -m Remove postfix configs
-    -n reset network interface scripts (you will have no connections or routes)
     -f remove firewall rules that aren't part of the default (ssh, dhcpv6-client)
+    -i reset iscsi configs (target and initiator)
     -k reset kerberos configs
     -l reset ldap configs (Client)
-    -i reset iscsi configs (target and initiator)
+    -m Remove postfix configs
+    -n reset network interface scripts (you will have no connections or routes)
+    -q Reset SELinux Requires Reboot
     -s Set SELinux to permissive mode if not already enabled
     -z Run all options listed above NOTE: Enables SELinux(Permissive mode) and tells you to reboot if you have it disabled${NC}\n"
 
@@ -33,6 +35,24 @@ turn_on_selinux() {
         printf "${GREEN}SELinux already enabled\n${NC}"
       fi
 }
+
+
+
+################################################
+# Resets SELinux to defaults.
+# Requires Reboot
+################################################
+reset_selinux() {
+      turn_on_selinux
+      setenforce 0
+      yum -y remove selinux-policy\* 2>/dev/null
+      yes| rm -rf /etc/selinux/{targeted,config} 2>/dev/null
+      yum -y install selinux-policy-targeted 2>/dev/null
+      touch /.autorelabel
+
+      printf "${RED}Reboot required SELinux Reset\n${NC}"
+}
+
 
 
 ################################################
@@ -160,7 +180,7 @@ reset_postfix() {
 
 
 
-while getopts :dhmnfklisz opt; do
+while getopts :dhmnfkliqsz opt; do
     case $opt in
         h)
             printf "{$help_text}"
@@ -198,6 +218,10 @@ while getopts :dhmnfklisz opt; do
         s)
             turn_on_selinux
             ;;
+        q)
+            printf "${CYAN}Resetting SELinux\n${NC}"
+            reset_selinux            
+            ;;
         d)
             printf "${CYAN}Resetting Caching NameServer \n${NC}"
             reset_caching_nameserver
@@ -211,6 +235,7 @@ while getopts :dhmnfklisz opt; do
             reset_firewalld
             reset_ldap
             reset_autofs
+            reset_selinux            
             if [ "$(rpm -qa | grep targetcli | wc -l)" -gt 0 ]; then
               reset_iscsi_target
             else
