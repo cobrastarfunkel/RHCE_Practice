@@ -28,6 +28,9 @@ help_text="${CYAN}$(basename "$0") Usage: [-hnfk] -- Resets various settings use
 
 [ $# -eq 0 ] && { printf "${help_text}"; exit 1; }
 
+# Removes fstab entries below the line ## LAB Stuff
+sed -i '/## LAB Stuff/q' /etc/fstab
+
 turn_on_selinux() {
       selinux_status=$(grep "SELINUX=" /etc/selinux/config | grep -v "#" | cut -d= -f 2)
       if [ "$selinux_status" = "disabled" ]; then
@@ -157,6 +160,7 @@ reset_ldap() {
 # Reset Iscsi Initiator
 ################################################
 reset_iscsi_initiator() {
+    iscsiadm --mode node --logoutall=all
     systemctl disable {iscsi,iscsid}
     yum -y remove iscsi-initiator-utils >/dev/null
     yes| rm -rI /etc/iscsi 2>/dev/null
