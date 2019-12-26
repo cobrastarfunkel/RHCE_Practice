@@ -186,7 +186,7 @@ reset_nfs() {
 # Reset ldap configs and remove packages
 ################################################
 reset_ldap() {
-    yum remove -y nss-pam-ldapd openldap 1>/dev/null
+    yum remove -y nss-pam-ldapd 1>/dev/null
     yes| rm /etc/nslcd.conf 2>/dev/null
     sed -i -e 's/ldap:\/\/.*/ldap:\/\//g' -e 's/BASE.*/BASE/g' /etc/openldap/ldap.conf 2>/dev/null
     printf "${GREEN}LDAP Configs Reset\n${NC}"
