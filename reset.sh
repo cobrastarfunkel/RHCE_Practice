@@ -13,6 +13,7 @@ help_text="${CYAN}$(basename "$0") Usage: [-hnfk] -- Resets various settings use
 
     -h print this text
 
+    -c Reset chrony
     -d This assumes you're using unbound for a cahing nameserver.  It removes it and all its configs
     -f remove firewall rules that aren't part of the default (ssh, dhcpv6-client)
     -i reset iscsi configs (target and initiator)
@@ -20,6 +21,7 @@ help_text="${CYAN}$(basename "$0") Usage: [-hnfk] -- Resets various settings use
     -l reset ldap configs (Client)
     -m Remove postfix configs
     -n reset network interface scripts (you will have no connections or routes)
+    -o reset NFS(Also resets Kerberos)
     -q Reset SELinux Requires Reboot
     -s Set SELinux to permissive mode if not already enabled
     -z Run all options listed above NOTE: Enables SELinux(Permissive mode) and tells you to reboot if you have it disabled${NC}\n"
@@ -82,6 +84,17 @@ reset_network() {
 
 
 ################################################
+# Reset chrony configs and remove packages
+################################################
+reset_chrony() {
+    systemctl disable chronyd >/dev/null
+    yum -y remove chrony 2>/dev/null
+    yes| rm /etc/chrony.conf 2>/dev/null
+}
+
+
+
+################################################
 # Reset firewalld Zones to default settings.
 #
 # Deleteing the zone files will set the zones 
@@ -104,12 +117,28 @@ reset_firewalld() {
 # Reset kerberos configs and remove packages
 ################################################
 reset_kerberos() {
-    yes| rm /etc/krb5.conf 2> /dev/null
+    yes| rm /etc/krb5.{conf,keytab} 2> /dev/null
     yum -y remove krb5-workstation pam_krb5 > /dev/null
     yum -y reinstall krb5-libs > /dev/null
     printf "${GREEN}Kerberos Configs Reset\n${NC}"
 }
 
+
+
+################################################
+# Reset nfs configs and remove packages
+################################################
+reset_nfs() {
+    setsebool nfs_export_all_ro on
+    setsebool nfs_export_all_rw on
+    umount {{nfs_dirs }} 2>/dev/null
+    yes| rm -rI {{ nfs_dirs }} 2>/dev/null
+    yes| rm /etc/exports 2>/dev/null
+    systemctl disable nfs
+    yum -y remove nfs-utils >/dev/null
+    reset_kerberos
+    printf "${GREEN}NFS Configs Reset\n${NC}"
+}
 
 
 ################################################
@@ -185,7 +214,7 @@ reset_postfix() {
 
 
 
-while getopts :dhmnfkliqsz opt; do
+while getopts :cdhmnofkliqsz opt; do
     case $opt in
         h)
             printf "{$help_text}\n"
@@ -194,6 +223,10 @@ while getopts :dhmnfkliqsz opt; do
         m)
             printf "${CYAN}Resetting Postfix \n${NC}"
             reset_postfix
+            ;;
+        c)
+            printf "${CYAN}Resetting Chrony \n${NC}"
+            reset_chrony
             ;;
         n)
             printf "${CYAN}Resetting Network Configs\n${NC}"
@@ -206,6 +239,10 @@ while getopts :dhmnfkliqsz opt; do
         k)
             printf "${CYAN}Resetting Kerberos Configs\n${NC}"
             reset_kerberos
+            ;;
+        o)
+            printf "${CYAN}Resetting NFS Configs\n${NC}"
+            reset_nfs
             ;;
         l)
             printf "${CYAN}Resetting LDAP Configs\n${NC}"
@@ -234,8 +271,10 @@ while getopts :dhmnfkliqsz opt; do
         z)
             printf "${CYAN}Resetting Everything\n${NC}"
             reset_postfix
+            reset_chrony
             turn_on_selinux
             reset_kerberos
+            reset_nfs
             reset_network
             reset_firewalld
             reset_ldap

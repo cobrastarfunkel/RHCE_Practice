@@ -6,6 +6,7 @@
     device_to_remove: /dev/sdb
     mgmt_interface: mgmt
     isci_file_loc: /root/iscsi_file
+    nfs_dirs: /{srv,mnt}/nfs*
 
   tasks:
     - name: Template Script
