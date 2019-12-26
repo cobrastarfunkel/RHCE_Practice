@@ -25,13 +25,14 @@ help_text="${CYAN}$(basename "$0") Usage: [-hnfk] -- Resets various settings use
     -q Reset SELinux Requires Reboot
     -s Set SELinux to permissive mode if not already enabled
     -t Reset fstab based on lines below a line '## LAB Stuff' in the file
-    -z Run all options listed above NOTE: Enables SELinux(Permissive mode) and tells you to reboot if you have it disabled${NC}\n"
+    -u Reset Samba
+    -z Run all options listed above NOTE: Enables SELinux(Permissive mode).${NC}\n"
 
 [ $# -eq 0 ] && { printf "${help_text}"; exit 1; }
 
 
 # Reset NetworkManager config. Renable resolv.con managing
-sed '/dns=none/d' /etc/NetworkManager/NetworkManager.conf
+sed -i '/dns=none/d' /etc/NetworkManager/NetworkManager.conf
 systemctl restart NetworkManager 1>/dev/null
 
 
@@ -52,10 +53,31 @@ turn_on_selinux() {
 # Resets SELinux to defaults.
 # Requires Reboot
 ################################################
+reset_samba() {
+      for user in john nance; do
+        userdel -rf $user
+      done
+
+      yes| rm -rI /srv/smb_* 2>/dev/null
+      yes| rm -rI /root/samba.txt 2>/dev/null
+
+      reset_fstab
+      systemctl disable smb nmb 1>/dev/null
+      yum remove -y samba* cifs-utils 1>/dev/null
+      yes| rm -rI /etc/samba
+      reset_selinux
+}
+
+
+
+################################################
+# Resets SELinux to defaults.
+# Requires Reboot
+################################################
 reset_selinux() {
       turn_on_selinux
       setenforce 0
-      yum -y remove selinux-policy\* 1>/dev/null
+      yum -y remove setroubleshoot-server selinux-policy\* 1>/dev/null
       yes| rm -rf /etc/selinux/{targeted,config} 2>/dev/null
       yum -y install selinux-policy-targeted 1>/dev/null
       touch /.autorelabel
@@ -147,8 +169,8 @@ reset_fstab() {
 # Reset nfs configs and remove packages
 ################################################
 reset_nfs() {
-    setsebool nfs_export_all_ro on
-    setsebool nfs_export_all_rw on
+    setsebool -P nfs_export_all_ro on
+    setsebool -P nfs_export_all_rw on
     umount {{nfs_dirs }} 2>/dev/null
     yes| rm -rI {{ nfs_dirs }} 2>/dev/null
     yes| rm /etc/exports 2>/dev/null
@@ -234,7 +256,7 @@ reset_postfix() {
 
 
 
-while getopts :cdhmnofkltiqsz opt; do
+while getopts :cdhmnofkltiqsuz opt; do
     case $opt in
         h)
             printf "{$help_text}\n"
@@ -292,6 +314,10 @@ while getopts :cdhmnofkltiqsz opt; do
             printf "${CYAN}Resetting Caching NameServer \n${NC}"
             reset_caching_nameserver
             ;;
+        u)
+            printf "${CYAN}Resetting Samba \n${NC}"
+            reset_samba
+            ;;
         z)
             printf "${CYAN}Resetting Everything\n${NC}"
             reset_postfix
@@ -299,6 +325,7 @@ while getopts :cdhmnofkltiqsz opt; do
             turn_on_selinux
             reset_kerberos
             reset_nfs
+            reset_samba
             reset_network
             reset_firewalld
             reset_ldap
@@ -310,7 +337,7 @@ while getopts :cdhmnofkltiqsz opt; do
               reset_iscsi_initiator
             fi
             reset_caching_nameserver
-            printf "${GREEN}Everything Reset\n${NC}"
+            printf "${GREEN}Everything Reset Reboot Required\n${NC}"
             ;;
         \?)	
             printf "{$help_text}\n"
