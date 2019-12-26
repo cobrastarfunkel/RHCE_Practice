@@ -59,7 +59,7 @@ reset_samba() {
       done
 
       yes| rm -rI /srv/smb_* 2>/dev/null
-      yes| rm -rI /root/samba.txt 2>/dev/null
+      yes| rm -rI /root/smb*.txt 2>/dev/null
 
       reset_fstab
       systemctl disable smb nmb 1>/dev/null
