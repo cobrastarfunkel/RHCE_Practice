@@ -29,6 +29,7 @@ help_text="${CYAN}$(basename "$0") Usage: [-hnfk] -- Resets various settings use
 [ $# -eq 0 ] && { printf "${help_text}"; exit 1; }
 
 # Removes fstab entries below the line ## LAB Stuff
+umount -a 2>/dev/null
 sed -i '/## LAB Stuff/q' /etc/fstab
 
 turn_on_selinux() {
@@ -50,9 +51,9 @@ turn_on_selinux() {
 reset_selinux() {
       turn_on_selinux
       setenforce 0
-      yum -y remove selinux-policy\* 2>/dev/null
+      yum -y remove selinux-policy\* 1>/dev/null
       yes| rm -rf /etc/selinux/{targeted,config} 2>/dev/null
-      yum -y install selinux-policy-targeted 2>/dev/null
+      yum -y install selinux-policy-targeted 1>/dev/null
       touch /.autorelabel
 
       printf "${RED}Reboot required SELinux Reset\n${NC}"
@@ -79,7 +80,7 @@ reset_network() {
     ip route flush all
 
     # restart network and reload network manager
-    systemctl restart network;
+    systemctl restart network 1>/dev/null
     nmcli con reload
     printf "${GREEN}Network configs reset!\n${NC}"
 }
@@ -90,8 +91,8 @@ reset_network() {
 # Reset chrony configs and remove packages
 ################################################
 reset_chrony() {
-    systemctl disable chronyd >/dev/null
-    yum -y remove chrony 2>/dev/null
+    systemctl disable chronyd 1>/dev/null
+    yum -y remove chrony 1>/dev/null
     yes| rm /etc/chrony.conf 2>/dev/null
 }
 
@@ -107,9 +108,9 @@ reset_chrony() {
 # in /etc/firewalld/zones
 ################################################
 reset_firewalld() {
-    yes| rm -I /etc/firewalld/zones/* 2> /dev/null
-    firewall-cmd --set-default-zone=public > /dev/null
-    firewall-cmd --reload > /dev/null
+    yes| rm -I /etc/firewalld/zones/* 2>/dev/null
+    firewall-cmd --set-default-zone=public 1>/dev/null
+    firewall-cmd --reload 1>/dev/null
     printf "${GREEN}Firewall rules reset\n${NC}"
 }
 
@@ -121,8 +122,8 @@ reset_firewalld() {
 ################################################
 reset_kerberos() {
     yes| rm /etc/krb5.{conf,keytab} 2> /dev/null
-    yum -y remove krb5-workstation pam_krb5 > /dev/null
-    yum -y reinstall krb5-libs > /dev/null
+    yum -y remove krb5-workstation pam_krb5 1>/dev/null
+    yum -y reinstall krb5-libs 1>/dev/null
     printf "${GREEN}Kerberos Configs Reset\n${NC}"
 }
 
@@ -137,8 +138,8 @@ reset_nfs() {
     umount {{nfs_dirs }} 2>/dev/null
     yes| rm -rI {{ nfs_dirs }} 2>/dev/null
     yes| rm /etc/exports 2>/dev/null
-    systemctl disable nfs
-    yum -y remove nfs-utils >/dev/null
+    systemctl disable nfs 1>/dev/null
+    yum -y remove nfs-utils 1>/dev/null
     reset_kerberos
     printf "${GREEN}NFS Configs Reset\n${NC}"
 }
@@ -148,7 +149,7 @@ reset_nfs() {
 # Reset ldap configs and remove packages
 ################################################
 reset_ldap() {
-    yum remove -y openldap-clients nss-pam-ldapd >/dev/null
+    yum remove -y nss-pam-ldapd openldap 1>/dev/null
     yes| rm /etc/nslcd.conf 2>/dev/null
     sed -i -e 's/ldap:\/\/.*/ldap:\/\//g' -e 's/BASE.*/BASE/g' /etc/openldap/ldap.conf 2>/dev/null
     printf "${GREEN}LDAP Configs Reset\n${NC}"
@@ -162,7 +163,7 @@ reset_ldap() {
 reset_iscsi_initiator() {
     iscsiadm --mode node --logoutall=all
     systemctl disable {iscsi,iscsid}
-    yum -y remove iscsi-initiator-utils >/dev/null
+    yum -y remove iscsi-initiator-utils 1>/dev/null
     yes| rm -rI /etc/iscsi 2>/dev/null
     yes| rm -rI /var/lib/iscsi/* 2>/dev/null
     printf "${GREEN}ISCSI Initiator Reset\n${NC}"
@@ -174,9 +175,9 @@ reset_iscsi_initiator() {
 # Reset Iscsi Target
 ################################################
 reset_iscsi_target() {
-    systemctl disable target
+    systemctl disable target 1>/dev/null
     targetcli clearconfig confirm=True
-    yum -y remove targetcli
+    yum -y remove targetcli 1>/dev/null
     yes| rm -rI /etc/target 2>/dev/null
     yes| rm {{ isci_file_loc }}
     printf "${GREEN}ISCSI Target Reset\n${NC}"
@@ -188,7 +189,7 @@ reset_iscsi_target() {
 # Remove autofs stuff
 ################################################
 reset_autofs() {
-    yum -y remove autofs nfs-utils
+    yum -y remove autofs 1>/dev/null
     printf "${GREEN}Autofs Reset\n${NC}"
 }
 
@@ -198,8 +199,8 @@ reset_autofs() {
 # Remove Unbound and its config
 ################################################
 reset_caching_nameserver() {
-    systemctl disable unbound
-    yum -y remove unbound
+    systemctl disable unbound 1>/dev/null
+    yum -y remove unbound 1>/dev/null
     yes| rm -rI /etc/unbound 2>/dev/null
     printf "${GREEN}Caching Nameserver Reset\n${NC}"
 }
@@ -210,9 +211,9 @@ reset_caching_nameserver() {
 # Remove postfix and main.cf
 ################################################
 reset_postfix() {
-    systemctl disable postfix
+    systemctl disable postfix 1>/dev/null
     yes| rm -rI /etc/postfix/main.cf 2>/dev/null
-    yum -y reinstall postfix
+    yum -y reinstall postfix 1>/dev/null
     printf "${GREEN}Postfix Reset\n${NC}"
 }
 
