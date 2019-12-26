@@ -28,6 +28,9 @@ Partitions can also be removed.  The default is sdb but change it to whatever de
 #### Network Interfaces
 Assign the name of the connection you want preserved to the mgmt_interface variable in push_reset.yml.  This is the ifcfg-{{ name }} of the file under /etc/sysconfig/network-scripts.  This is so the server can still be accessed by SSH instead of having to directly access it through the console.
 
+#### Iscsi Initiator
+Assign the location of the iscsi fileio you use in the push_reset.yml file
+
 #### Reseting
 Run the push_reset.yml playbook to push out the script to other servers.  You can pass args to the playbook by using --extra-vars:
 
