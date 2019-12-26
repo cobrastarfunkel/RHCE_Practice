@@ -24,13 +24,17 @@ help_text="${CYAN}$(basename "$0") Usage: [-hnfk] -- Resets various settings use
     -o reset NFS(Also resets Kerberos)
     -q Reset SELinux Requires Reboot
     -s Set SELinux to permissive mode if not already enabled
+    -t Reset fstab based on lines below a line '## LAB Stuff' in the file
     -z Run all options listed above NOTE: Enables SELinux(Permissive mode) and tells you to reboot if you have it disabled${NC}\n"
 
 [ $# -eq 0 ] && { printf "${help_text}"; exit 1; }
 
-# Removes fstab entries below the line ## LAB Stuff
-umount -a 2>/dev/null
-sed -i '/## LAB Stuff/q' /etc/fstab
+
+# Reset NetworkManager config. Renable resolv.con managing
+sed '/dns=none/d' /etc/NetworkManager/NetworkManager.conf
+systemctl restart NetworkManager 1>/dev/null
+
+
 
 turn_on_selinux() {
       selinux_status=$(grep "SELINUX=" /etc/selinux/config | grep -v "#" | cut -d= -f 2)
@@ -130,6 +134,16 @@ reset_kerberos() {
 
 
 ################################################
+# Removes fstab entries below the line ## LAB Stuff
+################################################
+reset_fstab() {
+    umount -a 2>/dev/null
+    sed -i '/## LAB Stuff/q' /etc/fstab
+}
+
+
+
+################################################
 # Reset nfs configs and remove packages
 ################################################
 reset_nfs() {
@@ -140,6 +154,7 @@ reset_nfs() {
     yes| rm /etc/exports 2>/dev/null
     systemctl disable nfs 1>/dev/null
     yum -y remove nfs-utils 1>/dev/null
+    reset_fstab
     reset_kerberos
     printf "${GREEN}NFS Configs Reset\n${NC}"
 }
@@ -219,7 +234,7 @@ reset_postfix() {
 
 
 
-while getopts :cdhmnofkliqsz opt; do
+while getopts :cdhmnofkltiqsz opt; do
     case $opt in
         h)
             printf "{$help_text}\n"
@@ -268,6 +283,10 @@ while getopts :cdhmnofkliqsz opt; do
         q)
             printf "${CYAN}Resetting SELinux\n${NC}"
             reset_selinux            
+            ;;
+        t)
+            printf "${CYAN}Resetting fstab\n${NC}"
+            reset_fstab            
             ;;
         d)
             printf "${CYAN}Resetting Caching NameServer \n${NC}"
