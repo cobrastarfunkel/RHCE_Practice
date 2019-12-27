@@ -40,6 +40,10 @@
       changed_when: True
       notify: Remove Parts
 
+    - name: unmount everything
+      shell: "umount -a; swapoff -a"
+      when: remove_vgs is defined or remove_parts is defined
+
     - name: Show Results
       debug:
         msg: "{{ script_output.stdout }} "

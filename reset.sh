@@ -76,7 +76,11 @@ reset_samba() {
 ################################################
 reset_selinux() {
       turn_on_selinux
-      setenforce 0
+      selinux_status=$(grep "SELINUX=" /etc/selinux/config | grep -v "#" | cut -d= -f 2)
+      if [ "$selinux_status" = "enforcing" ]; then
+        sed -i 's/SELINUX=enforcing/SELINUX=permissive/' /etc/selinux/config
+        printf "${GREEN}SELinux changed from enforcing to permissive\n${NC}"
+      fi
       yum -y remove setroubleshoot-server selinux-policy\* 1>/dev/null
       yes| rm -rf /etc/selinux/{targeted,config} 2>/dev/null
       yum -y install selinux-policy-targeted 1>/dev/null
@@ -159,6 +163,7 @@ reset_kerberos() {
 # Removes fstab entries below the line ## LAB Stuff
 ################################################
 reset_fstab() {
+    swapoff -a 2>/dev/null
     umount -a 2>/dev/null
     sed -i '/## LAB Stuff/q' /etc/fstab
 }
