@@ -16,10 +16,10 @@ TODO: Fix how hostname is set, ansible will assign the ip if you run the rhce_pr
 TODO: Cover the rest of the inventory formats for hosts file
 
 ### Reset Servers Script
-The reset.sh script will reset your server but you can't run the Network interfaces option manually until you run the push_reset.yml playbook atleast once.  The script has a jinja variable in it that needs to be set.  After you run the playbook the templated_reset.sh can be run manually if you want.
+The reset.sh script will reset your server.  The script has a jinja variable in it that need to be set.  After you run the push_reset.yml playbook the templated_reset.sh can be run manually if you want.
 
 #### Volume Groups
-##### NOTE: Entries in fstab are not removed so those need to be cleaned up when you remove vgs and or partitions.  
+##### NOTE: Entries in fstab are not removed so those need to be cleaned up when you remove vgs and or partitions with the push_reset.yml playbook.  
 Volume groups can be removed with the reset script if you want it to.  Set the names of the volume groups in the push_reset.yml (Keep this as a list even if you only have one lvm, so keep the same ['vgname'] format) and pass an extra variable(Example Below) setting remove_vgs to True.
 
 #### Partitions
@@ -29,7 +29,7 @@ Partitions can also be removed.  The default is sdb but change it to whatever de
 Assign the name of the connection you want preserved to the mgmt_interface variable in push_reset.yml.  This is the ifcfg-{{ name }} of the file under /etc/sysconfig/network-scripts.  This is so the server can still be accessed by SSH instead of having to directly access it through the console.
 
 #### Iscsi Initiator
-Assign the location of the iscsi fileio you use in the push_reset.yml file
+Assign the location of the iscsi fileio you use in the push_reset.yml file.
 
 #### Reseting
 Run the push_reset.yml playbook to push out the script to other servers.  You can pass args to the playbook by using --extra-vars:
