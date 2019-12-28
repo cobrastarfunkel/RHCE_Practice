@@ -19,7 +19,7 @@ TODO: Cover the rest of the inventory formats for hosts file
 The reset.sh script will reset your server.  The script has a jinja variable in it that need to be set.  After you run the push_reset.yml playbook the templated_reset.sh can be run manually if you want.
 
 #### Volume Groups
-##### NOTE: Entries in fstab are not removed so those need to be cleaned up when you remove vgs and or partitions with the push_reset.yml playbook.  
+##### NOTE: Entries in fstab are not removed by default with partitions. If you reset nfs it will reset fstab as well but for the partitions make sure you have the -t option passed in reset_args or the entries will still be there.  Follow the format in the script of '## LAB Stuff'.  All line below this will be removed from fstab.  Make sure the lab entries are there under that line or you could end up troubleshooting when your server fails to boot.
 Volume groups can be removed with the reset script if you want it to.  Set the names of the volume groups in the push_reset.yml (Keep this as a list even if you only have one lvm, so keep the same ['vgname'] format) and pass an extra variable(Example Below) setting remove_vgs to True.
 
 #### Partitions
