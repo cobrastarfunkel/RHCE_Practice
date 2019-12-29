@@ -156,12 +156,15 @@ Mount the nfs_sec share persistently on server2 at /mnt/nfs_sec
 Test the other two on /mnt/nfs_pub nfs_group
 
 #### SMB Shares
-On Server2 create the directories /srv/smb_{group,user,multi}
+On Server2 create the directories /srv/smb_{group,multi}
 Create a group called smbgroup that can use the smb_group share and two samba users named john and nance. Put john in the smbgroup
 Set john's password to password
 Configure a samaba share on smb_group that only allows 10.0.0.0/24 and localhost connections and is owned by the smbgroup.  Users should be able to collaborate but only file owners should be able to remove files. smbgroup can read and write nance can only read
 
-On Server1 mount the group share persistently at /mnt/smb_group using a file for the username and password of john
+Create a share called multi on /srv/smb_multi that allows alice to write and paul to read.  
+
+On Server1 mount the group share persistently at /mnt/smb_group using a file (/root/smbjohn.txt) for the username and password of john
+On Server1 Mount /srv/smb_multi persistently as a multiuser mount using johns credentials
 
 ### Kerberos Setup
 #### Before you Run the Playbook
