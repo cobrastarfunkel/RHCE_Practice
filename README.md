@@ -12,16 +12,18 @@ This is meant to study for the RHCE.
    
    internal ip: 10.0.0.102
 	
-   Web Server, Iscii Initiator: server1.rhce.lab
-   Should have at least 3 interfaces and two hard disks
+   
+##### Web Server, Iscii Initiator: server1.rhce.lab
+   Should have 2 interfaces and two hard disks
    2 Interfaces on the internal network and one management interface on the external network
    The management interfaces are optional I suppose but it's helpful to have seperation for 
    some of the firewall rules. The interfaces reflect my setup with proxmox.
+   
    teamed interface(ens19 & ens20) ip: 10.0.0.103
    
 	
-   Iscii Target: server2.rhce.lab
-   Should have 3 interfaces and two hard disks
+##### Iscii Target: server2.rhce.lab
+   Should have 2 interfaces and two hard disks
    teamed interfaces ip: 10.0.0.104
 
 TOC
