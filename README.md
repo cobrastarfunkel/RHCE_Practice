@@ -3,27 +3,28 @@ RHCE TEST PREP
 This is meant to study for the RHCE.
 ##### Hostnames and fqdn's are set by ansible.  Configure group_vars/all "long_domain" "short_domain" for the domain and the "ansible_hostname" in the inventory file for the hostname. 
 
-##### The IPA server was setup using the guide from https://www.lisenet.com/rhce/.  If you follow this everything should work as long as you configure the ip's, domain, and other variables to match what you plan to use.  There is also a ton of information available on the site as well as a good practice exam.
+##### The IPA server was setup using the guide from https://www.lisenet.com/rhce/.  If you follow this everything should work as long as you configure the ip's, domain, and other variables to match what you plan to use.  There is also a ton of information available on the site as well as a good practice exam.  It doesn't go over configuring the ipa server to be a router.  If you don't want to access your servers from outside of the 10.0.0.0 network then don't worry about it.  If you do want to access it writing some firewalld rich rules to forward ssh traffic to the servers below is one way to set that up.
 
 #### Servers Used for Lab
    IPA Server: ipa.rhce.lab
    Has DNS convigured and is the mail server if you want.
-   mgmt ip: 192.168.0.102
+   mgmt ip: 192.168.0.102 (Setup forwarding to the 10.0.0.0 network)
+   
    internal ip: 10.0.0.102
 	
-   Web Server, Iscii Initiator: server1.rhce.lab
-   Should have at least 3 interfaces and two hard disks
+   
+##### Web Server, Iscii Initiator: server1.rhce.lab
+   Should have 2 interfaces and two hard disks
    2 Interfaces on the internal network and one management interface on the external network
    The management interfaces are optional I suppose but it's helpful to have seperation for 
    some of the firewall rules. The interfaces reflect my setup with proxmox.
-  
+   
    teamed interface(ens19 & ens20) ip: 10.0.0.103
-   mgmt interface(eth0): 192.168.0.103
+   
 	
-   Iscii Target: server2.rhce.lab
-   Should have 3 interfaces and two hard disks
+##### Iscii Target: server2.rhce.lab
+   Should have 2 interfaces and two hard disks
    teamed interfaces ip: 10.0.0.104
-   mgmt interface: 192.168.0.104
 
 TOC
 ====
@@ -64,62 +65,59 @@ Run the push_reset.yml playbook to push out the script to other servers.  You ca
 ### RHCE Tasks
 
 
-##### Make sure SELinux is in enforcing mode
+#### Make sure SELinux is in enforcing mode
 Point both servers to the ipa server to use as a time server
 
-#### Server1 Partitioning
-Create a GPT partition table and add 2 partitions:
-1 swap partition of 3G
-1 lvm partition of the remaining space
-
-Give the swap partition the label of RHCE_SWAP and persistently mount it
-
-Create a volume group name vg_rhce using the lvm partition
-Create one lvm named lv_ext4 with 1Gb of space, ext4 filesystem and label it RHCE_EXT4.  Mount it persistently at /mnt/lv_ext4
-
-Add the remaining space from vg_rhce to lv_ext4
-
-Make a 1Gb swap lvm named lv_swap by removing space from lv_ext4 and mount it peristently
-
-Reboot to verify config at some point
+Mount the Centos disc to use as a repo
 
 
-#### Server2 Partitioning
-Create a MBR partition table, 3 100Mb Primary partitions, and one extended partition using the rest of the space.
-Create a 1Gb swap partition and a 2G lvm partition on the extended partition
-Create a vg named vg_iscsi and an lvm called lv_iscsi with 1G of space and xfs filesystem
+##### Server1 Apache
+Team the two available interfaces to use active backup with ip: 10.0.0.103/24 dns:10.0.0.102
 
-#### Firewall Rules
-###### Server1 Firewall Rich Rules
-Team the two available interfaces to use active backup with ip: 10.0.0.103/24 dns:8.8.8.8
+Install httpd and create a Virtual Host that listens on 10.0.0.103 port 5555. alice is the admin the name is vhost2.rhce.lab and the alias vhost2 with a combined log file called alice.log and an error called alice_error.log.
+The document root should be /srv/web/alice and should make alice login with a password.  No one else can access it. Put an index.html file in it with some stuff. 
+Log the traffic with a prefix of HTTP_5555. Make sure the teamed interface uses the dmz also ensure any requests made to the server on port 80 from 10.0.0.103 are redirected to port 5555 and are routed through the dmz zone.
 
-Install httpd and add a test file to the web server and make it listen on 10.0.0.103 port 5555. Configure SELinux accordingly
+Create a secure Virtual Host that listens on port 9997 using the dns name dynamic.rhce.lab and only allows members of the apacheusers group to access it except for alice but put alice in the apacheusers group. Enforce passwords. Deploy a cgi script from this vhost from /srv/web/group/cgi-bin
+/srv/web/group should be the document root. Forward traffic on port 443 to 9997 
+Ensure SSL is used with a self signed cert. 
 
-Configure a firewall rich rule in the dmz zone that allows traffic to http only from 10.0.0.104.  Log the traffic with a prefix of HTTP_5555. Make sure the teamed interface uses the dmz also ensure any requests made to the server on port 80 from 10.0.0.104 are redirected to port 5555 and are routed through the dmz zone. 
+ 
 
 
-###### Server 2 Rich Rules
-Configure two interfaces to make a teamed interface for activebackup ip 10.0.0.104(Everything else is the same as server1) on the private zone, configure the third interface to have the ip 192.168.0.104/24
+##### Server 2 SSH
+Forward traffic for 10.0.0.104 on port 80 to 10.0.0.103:5555
 
-Forward traffic for port 22 on the 10.0.0.104 interface to 2222 and configure ssh to work on 2222. It should only allow 10.0.0.103 to ssh on that port and should reject traffic from the ipa.  It should log both with a prefix of SSH_2222_SERVERNAME
+Configure two interfaces to make a teamed interface for activebackup ip 10.0.0.104(Don't give it a gateway and manually configure its routes) on the private zone.
 
-#### LDAP
+Configure SSH to run on port 2222 and log access to the server at 3 logs per minute.
+
+
+
+
+##### LDAP
 Join the two servers to the ipa server for user authentication
 
-#### DNS
-Configure server2 as a caching nameserver that listens on the teamed interface(10.0.0.104) and allows connections from the 10.0.0.0 subnet forward recursive queries to the ipa server(10.0.0.102). The rhce.lab zone is excluded from DNSSEC
 
-#### Null Mail Server
-Configure server2 to be a null client that forwards messages to the ipa server(10.0.0.104)
 
-#### Iscsi
+##### DNS
+Configure server1 as a caching nameserver that listens on the teamed interface(10.0.0.103) and allows connections from the 10.0.0.0 subnet forward recursive queries to the ipa server(10.0.0.102). The rhce.lab zone is excluded from DNSSEC
+
+
+
+##### Null Mail Server
+Configure server1 to be a null client that forwards messages to the ipa server(10.0.0.102)
+
+
+
+##### Iscsi
 Server2 will be the target
 
 On server1 change the intiator name to 2019-12.lab.rhce:init1
 
-###### Server2
-Resive the lv_iscsi and filesystem from before to have the rest of the space on vg_iscsi
-Create a block backstore named block1 using lv_iscsi
+
+##### Server2
+Create a block backstore named block1 using a volume group named vg_target and an lvm named lv_target(Make a partition and put it on that)
 Create a fileio backstore named file1 of 100M in /root/iscsi_file with caching disabled
 
 Create an IQN called server1
@@ -128,43 +126,67 @@ Add an acl for server1
 Add a portal for the 10.0.0.103 ip
 Use CHAP authentication userid=server1 password=server1
 
-###### Server1
+##### Server1
 Log into the target created on server2
-Mount file1 persistently at /iscsi_file
+Mount file1 persistently at /mnt/iscsi_file
+Create an lvm called lv_iscsi with 1G of space and xfs filesystem on block1(partiton and create a vg on block1) and mount persistently at /mnt/iscsi_block
 
-#### Kerberos
-Use the mgmt interfaces for kerberos / nfs stuff or change the /etc/hosts file to have the 10.0.0.0 ip's.  Otherwise kerberos won't work
 
-Join both servers to the ipa server using Kerberos (The keytabs are in /var/ftp/pub/server{1,2}.keytab on the ipa server)
+
+
+##### Kerberos
+Join both servers to the ipa server using Kerberos (The keytabs are in /var/ftp/pub/server{1,2} on the ipa server)
 Use alice or paul from the ldap server and try to get a Kereberos ticket password is password
+SSH using kerberos to one of the servers
 
 
-#### NFS
-Use the mgmt interface for nfs / kerberos stuff
 
-###### Server1 will be the NFS server
-There will be 3 NFS shares 
-Ensure selinux bools are secured(nfs_export_all_ro and rw)
-The public nfs dir will be /srv/nfs_pub only the 10.0.0.0/24 subnet is allowed. Change the selinux context to public_content_rw_t
-Set nfs_t for other nfs shares
-The kerberos nfs dir will be /srv/nfs_sec
-The group nfs dir will be /srv/nfs_group selinux context nfs_t
 
-Create a group called nfsgroup and ensure all files in the /srv/nfs_group share are rw for the group and only file owners can delete files
-Change ownership of the nfs_sec share to alice
-Mount the nfs_sec share persistently on server2 at /mnt/nfs_sec
-Test the other two on /mnt/nfs_pub nfs_group
+##### NFS
+###### Server2 will be the NFS server 
+The kerberos nfs dir will be /srv/nfs/sec
+The group nfs dir will be /srv/nfs/group
 
-#### SMB Shares
-On Server2 create the directories /srv/smb_{group,multi}
-Create a group called smbgroup that can use the smb_group share and two samba users named john and nance. Put john in the smbgroup
-Set john's password to password
-Configure a samaba share on smb_group that only allows 10.0.0.0/24 and localhost connections and is owned by the smbgroup.  Users should be able to collaborate but only file owners should be able to remove files. smbgroup can read and write nance can only read
+Create a group called nfsgroup and ensure all files in the /srv/nfs/group share are rw for the group and only file owners can delete files
+Change ownership of the nfs/sec share to alice
 
-Create a share called multi on /srv/smb_multi that allows alice to write and paul to read.  
+##### Server1
+Mount the nfs/sec share persistently at /mnt/nfs/sec
+Mount nfs/group with autofs /mnt/nfs/group
 
-On Server1 mount the group share persistently at /mnt/smb_group using a file (/root/smbjohn.txt) for the username and password of john
-On Server1 Mount /srv/smb_multi persistently as a multiuser mount using johns credentials
+##### SMB Shares
+On Server2 create the directory /srv/smb/group
+Create a group called smbgroup that can use the smb/group share and two samba users named john and nance. Put john in the smbgroup
+Set the passwords to password
+Configure a samaba share on smb/group called share that only allows 10.0.0.0/24 and localhost connections and is owned by the smbgroup.  Users should be able to collaborate but only file owners should be able to remove files. smbgroup can read and write nance can only read. Mount with nance as a multiuser share  
+mount the group share persistently at /mnt/shares/group using a file (/root/smbnance.txt) and autofs
+
+Test sharing home dirs, mount on server1 at /mnt/home
+
+
+
+
+##### MariaDB On Server2
+Install Maria DB and ensure it is secure.  Use password for the root password. Set Mariadb to listen on port 1111
+Change the data directory for MariaDB to /mariadb
+Create a database named rhce 
+
+Create a table named users with values: ID(int) should auto increment, name(varchar), age (int) and set the ID as the primary key
+Insert some data into the table for two users Paul and Alice.
+
+Create a user john that has all permissions on the rhce database from any host
+Create a user jeff that has Insert, Update, Delete, and Select on the users table
+
+Backup the database to a gzipped file called rhce.sql.gz and a regular file called rhce.sql
+Setup a firewall rule that allows server1 access to the rhce database on port 1111. No other servers should be allowed to connect.
+
+
+Write a bash script that takes a directory name as an argument and finds files in the directory that are older than 30 days and tars them into a file named {the current date in mm/dd/yy format}.tar.
+If no argument is passed print a usage string that explains how to use the script.
+
+##### Other stuff
+Install sysstat and mess around with it.
+Delete the databse you made from above and import the backup.
 
 ### Kerberos Setup
 #### Before you Run the Playbook
